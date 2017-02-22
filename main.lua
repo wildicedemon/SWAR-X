@@ -143,7 +143,7 @@ spinnerAreaReturn = {
 	"Mt. Runar",
 	"Chiruka Remains"}
 spinnerLevel = {"1","2","3","4","5","6","7","8","9","10" }
-spinnerDiff = {	"Normal","Hard","Hell"}
+spinnerDiff = {	"Normal","Hard","Hell" }
 
 -- GUI
 addTextView("------------------------------Area Farm Configuration---------------------------------")newRow()
@@ -161,20 +161,18 @@ addTextView("Max Avg Level of Enemies") addEditNumber("ArenaMaxAvgLvl", 40) newR
 addTextView("--------------------------Rune Evaluation Configuration----------------------------")newRow()
 addCheckBox("CBRuneEval", "Evalu Runes: ", false) addCheckBox("CBRuneEvalStar", "Stars", false) addCheckBox("CBRuneEvalRarity", "Rarity", false) addCheckBox("CBRuneEvalPrimary", "Prime", false) addCheckBox("CBRuneEvalSubCent", "SubS", false) newRow()
 addTextView("---------------------------Primary Stat Configuration--------------------------------")newRow()
-addCheckBox("runePrimeHP", "HP ", true) addCheckBox("runePrimeATK", "ATK ", true) addCheckBox("runePrimeDEF", "DEF ", true) addCheckBox("runePrimeSPD", "SPD ", true) addCheckBox("runePrimeCRIRate", "CRI Rate", true) newRow()
-addCheckBox("runePrimeCRIDmg", "CRI Dmg ", true) addCheckBox("runePrimeRES", "RES ", true)addCheckBox("runePrimeACC", "ACC ", true) newRow()
+addCheckBox("runePrimeHP", "HP ", true) addCheckBox("runePrimeATK", "ATK ", true) addCheckBox("runePrimeDEF", "DEF ", true) addCheckBox("runePrimeSPD", "SPD ", true) newRow()
+addCheckBox("runePrimeCRIRate", "CRI Rate", true) addCheckBox("runePrimeCRIDmg", "CRI Dmg ", true) addCheckBox("runePrimeRES", "RES ", true)addCheckBox("runePrimeACC", "ACC ", true) newRow()
 
 addSpinnerIndex("runeStars", spinnerStars, "5 Star") addSpinnerIndex("runeRarity", spinnerRarity, "Rare") addSpinnerIndex("runeSubCentage", spinnerSubCent, "25%") addTextView("Sub Stats as %") newRow()
-addTextView("-------------------------------------------------------------------------------------------------------")newRow()
-addCheckBox("refillEnergy", "Refill Energy with Crystal ", false) addCheckBox("limitEnergyRefills", "Energy Refill Limit: ", false)  addEditNumber("refillEnergyLimit", 60) newRow()
-addCheckBox("refillWings", "Refill Wings with Crystal ", false) addCheckBox("limitWingsRefills", "Wing Refill Limit: ", false)  addEditNumber("refillWingsLimit", 60) newRow()
+addTextView("-----------------------------------Refill Configuration-----------------------------------")newRow()
+addCheckBox("refillEnergy", "Refill Energy with Crystal ", false) addTextView("  ") addCheckBox("limitEnergyRefills", "Energy Refill Limit: ", false)  addEditNumber("refillEnergyLimit", 60) newRow()
+addCheckBox("refillWings", "Refill Wings with Crystal ", false) addTextView("  ") addCheckBox("limitWingsRefills", "Wing Refill Limit: ", false)  addEditNumber("refillWingsLimit", 60) newRow()
 
-addTextView("-------------------------------------------------------------------------------------------------------")newRow()
+addTextView("--------------Advanced Configuration (only Pro version)--------------")newRow()
+addCheckBox("vibe", "Enable Vibrate", true) addCheckBox("dim", "Dim While Running", true) newRow()
 
-dimString = "Dim While Running"
-addCheckBox("vibe", "Enable Vibrate", true) addCheckBox("dim", dimString, true) newRow()
-
-dialogShowFullScreen("SWAR X v0.9 Configuration")
+dialogShow("SWAR X v0.9 Configuration")
 --Dim Screen
 if (dim) then
 	setBrightness(1)
@@ -1327,7 +1325,7 @@ while true do
 		end
 
 		wait(.5)
-		choice, listMatch = waitMulti({bigFlash, sellButton}, 3)
+		choice, listMatch = waitMulti({bigFlash, yes}, 3)
 		if (choice == 1) then break end
 		if (choice == 2) then
 			if (worldMapReg:exists(worldMap, 0) and refillEnergy) then
