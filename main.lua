@@ -29,6 +29,7 @@ arenaEmptyCount = 0
 arenaMain = 0
 arenaExe = 1
 swipeCount = 0
+refillEnergyLimit = 0
 roundcount = 0
 rstars = 0
 rslot = 0
@@ -58,9 +59,9 @@ dialogInit()
 spinnerRes = {"2560x1600", "2560x1440", "1920", "1280", "960"}
 spinnerStartscreen = {"Arena Battle Start Screen","PvE Battle Start Screen", "Either Start Screen", "Arena Battle Selection Window"}
 -- GUI
-addTextView("  ") addTextView("Resolution: ") addSpinnerIndex("setRes", spinnerRes, "2560x1440")
+addTextView("  ") addTextView("Resolution: ") addSpinnerIndex("setRes", spinnerRes, "2560x1440") newRow()
 newRow()
-addTextView("  ") addTextView("StartScreen: ") addSpinnerIndex("startScreen", spinnerStartscreen, "PvE Battle Start Screem")
+addTextView("  ") addTextView("StartScreen: ") addSpinnerIndex("startScreen", spinnerStartscreen, "PvE Battle Start Screem") newRow()
 dialogShow("Dimension Search Reference")
 
 -- Resolution of images and compareDimension
