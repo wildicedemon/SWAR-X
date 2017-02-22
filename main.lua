@@ -166,7 +166,8 @@ addCheckBox("runePrimeCRIDmg", "CRI Dmg ", true) addCheckBox("runePrimeRES", "RE
 
 addSpinnerIndex("runeStars", spinnerStars, "5 Star") addSpinnerIndex("runeRarity", spinnerRarity, "Rare") addSpinnerIndex("runeSubCentage", spinnerSubCent, "25%") addTextView("Sub Stats as %") newRow()
 addTextView("-------------------------------------------------------------------------------------------------------")newRow()
-addCheckBox("refillEnergy", "Refill Energy with Crystal", false) addCheckBox("refillWings", "Refill Wings with Crystal", false)       newRow()
+addCheckBox("refillEnergy", "Refill Energy with Crystal ", false) addCheckBox("limitEnergyRefills", "Energy Refill Limit: ", false)  addEditNumber("refillEnergyLimit", 60) newRow()
+addCheckBox("refillWings", "Refill Wings with Crystal ", false) addCheckBox("limitWingsRefills", "Wing Refill Limit: ", false)  addEditNumber("refillWingsLimit", 60) newRow()
 
 addTextView("-------------------------------------------------------------------------------------------------------")newRow()
 
@@ -207,25 +208,52 @@ function clickButton(target, num)
 end
 function refillEnergy()
 	if debugAll == true then toast("[Function] refillEnergy") end
+	if (limitEnergyRefills and refillEnergyLimit > 0 or not limitEnergyRefills) then
+		refillEnergyLimit = refillEnergyLimit - 1
+		waitClick(yes, 2)
+		rechargeEnergy:waitClick(rechargeFlash, 3)
+		waitClick(yesRecharge, 2)
 
-	clickButton(sellButton, 1)
-	rechargeEnergy:waitClick(rechargeFlash, 3)
-	wait(2)
-	clickButton(sellButton, 1)
-	upperRight:exists(cancelRefill, 5)
-	wait(1)
-	keyevent(4) -- back
-	keyevent(4)
-	wait(1)
+		-- If not enough crystals
+		if exists(yes) then
+			keyevent(4)  -- back button
+			keyevent(4)  -- back button
+			toast("Not enough crystals, waiting 1 minute before retrying.")
+			wait(60)
+		else
+			keyevent(4)  -- back button
+			keyevent(4)  -- back button
+		end
+	else
+		keyevent(4)  -- back button
+		toast("Not enough energy, waiting 10 minutes before retrying.")
+		wait(600)
+	end
 end
 function refillArena()
 	if debugAll == true then toast("[Function] refillArena") end
-	clickButton(sellButton, 1)
-	rechargeEnergy:waitClick(rechargeWing, 3)
-	wait(2)
-	clickButton(sellButton, 1)--Yes button
-	okenReg:existsClick(ok)
-	upperRight:exists(bigCancel, 5)--the cancel is diffrent
+	if (limitWingsRefills and refillWingsLimit > 0 or not limitWingsRefills) then
+		refillWingsLimit = refillWingsLimit - 1
+		waitClick(yes, 2)
+		waitClick(rechargeWing, 3)
+		waitClick(yesRecharge, 2)
+
+		-- If not enough crystals
+		if exists(yes) then
+			keyevent(4)  -- back button
+			keyevent(4)  -- back button
+			toast("Not enough crystals, waiting 1 minute before retrying.")
+			wait(60)
+		else
+			keyevent(4)  -- back button
+			keyevent(4)  -- back button
+		end
+	else
+		keyevent(4)  -- back button
+		toast("Not enough wings, waiting 10 minutes before retrying.")
+		wait(600)
+	end
+
 	areaGoTo(areaArena)
 end
 function ripairs(t)
