@@ -1,8 +1,8 @@
-function tableLength(T)
-	local count = 0
-	for _ in pairs(T) do count = count + 1 end
-	return count
 end
+
+-- =========================
+-- SWAR-X specific Functions
+-- =========================
 function keyNum()
 	local preMinSimilarity = Settings:get("MinSimilarity")
 	Settings:set("MinSimilarity", 0.7)
