@@ -21,6 +21,18 @@ function immersiveAuto(target)
     setImmersiveMode(false)
 end
 
+function regionFinder(target, var)
+    if debugAll == true then toast("Try to find Region") target:highlight(1) end
+    local x = target:getX() - var
+    local y = target:getY() - var
+    local w = target:getW() + (var * 2)
+    local h = target:getH() + (var * 2)
+
+    local orgReg = Region(x,y,w,h)
+
+    if debugAll == true then toast("Found region: "..x..", "..y..", "..w..", "..h) end
+    return orgReg
+end
 function autoResize(target, defaultDimension, immersive)
     local max = 0
     local localX = defaultDimension
@@ -111,7 +123,6 @@ function waitMultiReg(target, seconds, skipLocation, reg)
     end
 end
 
-
 function waitMultiRegIndex(target, seconds, skipLocation, reg, index, maxIndex)
     local timer = Timer()
     while (true) do
@@ -154,19 +165,19 @@ function waitMultiClick(target, seconds)
     end
 end
 
-function existsMultiMax(region, target)
+function existsMultiMaxSnap(region, target)
     local oldROI = Settings:getROI();
     local maxScore = 0
     local maxIndex = 0
     if (region ~= nil) then Settings:setROI(region) end
---    region:highlight(2)
+    --    region:highlight(2)
     for i, t in ipairs(target) do
         if (exists(t, 0)) then -- check once
-        local score = getLastMatch():getScore()
-        if (score > maxScore) then
-            maxScore = score
-            maxIndex = i
-        end
+            local score = getLastMatch():getScore()
+            if (score > maxScore) then
+                maxScore = score
+                maxIndex = i
+            end
         end
     end
     if (oldROI ~= nil) then
@@ -179,11 +190,53 @@ function existsMultiMax(region, target)
     return maxIndex
 end
 
+function existsMultiMax(target, region)
+    local oldROI = Settings:getROI()
+    local maxScore = 0
+    local maxIndex = 0
+    local match
+    if (region ~= nil) then Settings:setROI(region) end
+    for i, t in ipairs(target) do
+        if (i == 1) then usePreviousSnap(false) else usePreviousSnap(true) end
+        if (exists(t, 0)) then -- check once
+        local score = getLastMatch():getScore()
+        if (score > maxScore) then
+            maxScore = score
+            maxIndex = i
+            match = getLastMatch()
+        end
+        end
+    end
 
+    resumeROI(oldROI)
+    usePreviousSnap(false)
+    if (maxScore == 0) then
+        return -1
+    end
+    return maxIndex, match
+end
+
+function resumeROI(oldROI)
+    if (oldROI) then
+        Settings:setROI(oldROI)
+    else
+        Settings:setROI()
+    end
+end
 function simpleDialog(title, message)
     dialogInit()
     addTextView(message)
     dialogShow(title)
+end
+
+function detectLanguage(target, list)
+    local langList = ""
+    for i, l in ipairs(list) do
+        if (exists(target..l..".png", 0)) then return l end
+        langList = langList .. l .."\n"
+    end
+    return (getLanguage())
+end
 end
 
 function stageDetect()
