@@ -114,7 +114,7 @@ function regionWaitMulti(target, seconds, debug, skipLocation)
                     match = getLastMatch
                 end
                 if (debug) then match:highlight(0.5) end
-                return i, t.id, match
+                return i, match, t.id
             end
         end
         if (skipLocation ~= nil) then click(skipLocation) end
@@ -175,6 +175,7 @@ function waitMultiRegIndex(target, seconds, skipLocation, reg, index, maxIndex)
             if (i == index) or (i == index -1) or (index == maxIndex) then
                 if (i == 1) then usePreviousSnap(false) else usePreviousSnap(true) end
                 if not reg[i] == nil then
+                    reg[i]:highlight(1)
                     if (reg[i]:exists(t, 0)) then
                         usePreviousSnap(false)
                         return i, getLastMatch()
@@ -194,9 +195,6 @@ function waitMultiRegIndex(target, seconds, skipLocation, reg, index, maxIndex)
         end
     end
 end
-
-
-
 
 function waitMultiClick(target, seconds)
     local timer = Timer()
