@@ -14,7 +14,7 @@ runeSnap = Region(700,360,1150,1100)
 statsSection = Region(800,0,950,200) --UI for statistics of run
 
 --StageList Loop Regions
-battleGearWheelReg = Region(0,1220,225,221) --Battle Fig
+battleGearWheelReg = Region(0,1380,225,220) --Battle Fig
 victoryDiamondReg = Region(1800,670,280,260) --Victory Diamond
 worldMapReg = Region(1630,1200,200,200) --World Map
 bigFlashReg = Region(2050,1000,200,150) --Big Flash
