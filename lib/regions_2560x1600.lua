@@ -51,6 +51,8 @@ eBottomMon = Region(1785,610,250,250) -- (DONE)
 --(Fodder) Leveing Monster Regions
 NewFodder = Region(0,850,1800,450) -- (DONE)
 EndofMonL = Region(1540,850,430,460) -- (DONE)
+monListLeft = Location(120,1090)
+monListRight = Location(1660,1090)
 
 TopMonEXP = Region(400,965,520,200) -- (DONE)
 LeftMonEXP = Region(970,965,520,200) -- (DONE)
