@@ -442,6 +442,7 @@ function runeStarEval()
 	if debugAll == true then toast("[Function] runeStarEval") end
 	local starFind = listToTable(runeStarRegion:findAll(runeStar))
 	local starCount = tableLength(starFind)
+	local runeStarWord = "runeStar"..tostring(starCount)..".png"
 	if runeStarRegion:exists(Pattern(runeStarWord):similar(.9), 3) then
 		rstars = starCount
 		if debugAll == true then runeStarsRegionD:highlight(tostring(starCount), 2) end
@@ -469,8 +470,26 @@ end
 function runeDim()
 	if debugAll == true then toast("[Function] runeDim") end
 	runeCompDim = ""
-	local runeDimMatch = existsMultiMaxSnap(runeRarityRegion,{
-		"runeWord.png","runeWord98.png","runeWord96.png","runeWord94.png","runeWord92.png","runeWord90.png","runeWord88.png","runeWord86.png","runeWord84.png","runeWord82.png","runeWord80.png","runeWord78.png","runeWord76.png","runeWord74.png","runeWord72.png","runeWord70.png","runeWord68.png","runeWord66.png","runeWord64.png"})
+	local runeDimMatch = existsMultiMaxSnap(runeTypeAndSlotRegion,{
+		"runeWord.png",
+		"runeWord98.png",
+		"runeWord96.png",
+		"runeWord94.png",
+		"runeWord92.png",
+		"runeWord90.png",
+		"runeWord88.png",
+		"runeWord86.png",
+		"runeWord84.png",
+		"runeWord82.png",
+		"runeWord80.png",
+		"runeWord78.png",
+		"runeWord76.png",
+		"runeWord74.png",
+		"runeWord72.png",
+		"runeWord70.png",
+		"runeWord68.png",
+		"runeWord66.png",
+		"runeWord64.png"})
 	if runeDimMatch == -1 then
 		runeCompDim = "nil"
 	elseif runeDimMatch == 1 then
@@ -482,11 +501,11 @@ end
 function runeRarityEvaluation ()
 	if debugAll == true then toast("[Function] runeRarityEvaluation") end
 	local runeRarityMatch = existsMultiMaxSnap(runeRarityRegion,{
-		"RuneRarityCommon"..runeCompDim..".png",
-		"RuneRarityMagic"..runeCompDim..".png",
-		"RuneRarityRare"..runeCompDim..".png",
-		"RuneRarityHero"..runeCompDim..".png",
-		"RuneRarityLegendary"..runeCompDim..".png"})
+		runeRarityNormal,
+		runeRarityMagic,
+		runeRarityRare,
+		runeRarityHero,
+		runeRarityLegend})
 
 		if runeRarityMatch == -1 then
 			rrarity = "Nil"
@@ -524,7 +543,7 @@ function runeSlotEvaluation()
 	if debugAll == true then toast("[Function] runeSlotEvaluation") end
 	local preMinSimilarity = Settings:get("MinSimilarity")
 	Settings:set("MinSimilarity", 0.7)
-	local runeSlotMatch = existsMultiMaxSnap(runeRarityRegion,{
+	local runeSlotMatch = existsMultiMaxSnap(runeTypeAndSlotRegion,{
 		"runeSlot1"..runeCompDim..".png",
 		"runeSlot2"..runeCompDim..".png",
 		"runeSlot3"..runeCompDim..".png",
@@ -601,6 +620,7 @@ function runePrimaryEvaluation ()
 end
 function runeSubEvaluation ()
 	if debugAll == true then toast("[Function] runeSubEvaluation") end
+	if debugAll == true then runeSubRegion:highlight(1) end
 	if runeSubRegion:exists(runeSubPercentage) then
 		subStatFind = listToTable(runeSubRegion:findAll(runeSubPercentage))
 		subStatCent = tableLength(subStatFind)
@@ -665,9 +685,9 @@ function runeEval()
 							"Prime: "..rprime.."\n"..
 							"Sub: "..tostring(rsub).."%\n"..
 							"Dim: "..runeCompDim.."%")
-	wait(.5)
+	wait(2)
 	if sellRune == 1 then
-		setImagePath(localPath.."Runes")
+		setImagePath(localPath.."runes")
 		runeSnap:save("Sell"..rrarity..filenamecount..".png")
 		filenamecount = filenamecount + 1
 		wait(.4)
@@ -675,13 +695,13 @@ function runeEval()
 		setImagePath(imgPath)
 		return true
 	else
-		setImagePath(localPath.."Runes")
+		setImagePath(localPath.."runes")
 		runeSnap:save("Keep"..filenamecount..".png")
 		filenamecount = filenamecount + 1
 		wait(.4)
 		runeEvalStats:highlightOff()
 		setImagePath(imgPath)
-		varKeep = varKeep + 1
+		runesKeptCount = runesKeptCount + 1
 		return false
 	end
 end
@@ -700,14 +720,23 @@ function runeSale()
 					wait(.5)
 					if vibe == true then vibrate(1) end
 				end
-				if debugAll == true then toast("Selling Rune in 15!") wait(15) end
+				if debugAll == true then
+					toast("Selling Rune in 15! (Screenshot taken)")
+					setImagePath(localPath.."runes")
+					runeSnap:save("Sell"..rrarity..filenamecount..".png")
+					filenamecount = filenamecount + 1
+					wait(.4)
+					runeEvalStats:highlightOff()
+					setImagePath(imgPath)
+					wait(15)
+				end
 				buttonRegion:existsClick(sell, 0)
 				if debugAll == true then toast("Rune Sold!") wait(.75) end
 				existsClick(yes)
+				runesSoldCount = runesSoldCount + 1
 				local sellResponse, match = waitMulti({yes, worldMap}, 3)
 				if (sellResponse == 1) then
 					click(match)
-					print("need confirming selling rune")
 				end
 
 			else
@@ -717,6 +746,7 @@ function runeSale()
 			end
 		else
 			buttonRegion:existsClick(sell)
+			runesSoldCount = runesSoldCount + 1
 			wait(.5)
 			yesWordPngReg:existsClick(yes)
 		end
