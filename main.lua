@@ -918,7 +918,8 @@ stageClickList ={
 	{target = battleGearWheel, region = battleGearWheelReg, id = "battleGearWheelClick"},
 	{target = victoryDiamond, region = victoryDiamondReg, id = "victoryDiamondClick"},
 	{target = worldMap, region = worldMapReg, id = "worldMapClick"},
-	{target = bigFlash, region = bigFlashReg, id = "bigFlashClick"}
+	{target = bigFlash, region = bigFlashReg, id = "bigFlashClick"},
+	{target = defeatedDiamond, region = left, id = "defeatedDiamondClick"}
 }
 arenalist = {
 	battleGearWheel,
@@ -937,8 +938,8 @@ backList = {
 	victoryDiamond,
 	worldMap,
 	bigFlash,
-	bigCancel,
 	defeatedDiamond,
+	bigCancel,
 	networkDelay,
 	networkConnection,
 	cancelRefill,
@@ -1408,7 +1409,7 @@ while true do
 	end
 
 	--Victory Routine
-	if (choice == 2) or (choice == 5) then
+	if (choice == 2)then
 		if debugAll == true then toast("Choice 2 or 5 [Victory Routine]") end
 		victoryRoutine(choice, stageMatch)
 	end
@@ -1420,8 +1421,8 @@ while true do
 	end
 
 	--Death Routine
-	if (choice == 7) then
-		if debugAll == true then toast("Choice 7 [Death Routine]") end
+	if (choice == 5) then
+		if debugAll == true then toast("Choice 5 [Death Routine]") end
 		deathRoutine(choice, stageMatch)
 	end
 
