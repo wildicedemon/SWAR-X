@@ -1108,7 +1108,9 @@ function victoryRoutine(choice, stageMatch)
 	if (sellRune) then
 		runeSale()
 	else
-		multiCancel()
+		if not okenReg:existsClick(ok) then
+			multiCancel()
+		end
 	end
 end
 
