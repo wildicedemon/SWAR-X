@@ -3,8 +3,8 @@
 -- 		2560 x 1600
 -- ========================
 upperRight = Region(1760, 0, 800, 800)
-right = Region(1320, 700, 950, 350)
-left = Region(300, 700, 950, 350)
+right = Region(1320, 700, 950, 560)
+left = Region(300, 700, 950, 560)
 bottomLeft = Region(0, 900, 700, 700)
 
 buttonRegion = Region(770, 990, 1020, 440)
