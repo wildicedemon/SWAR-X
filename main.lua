@@ -466,31 +466,32 @@ function runeDim()
 	if debugAll == true then toast("[Function] runeDim") end
 	runeCompDim = ""
 	local runeDimMatch = existsMultiMaxSnap(runeTypeAndSlotRegion,{
-		"runeWord.png",
-		"runeWord98.png",
-		"runeWord96.png",
-		"runeWord94.png",
-		"runeWord92.png",
-		"runeWord90.png",
-		"runeWord88.png",
-		"runeWord86.png",
-		"runeWord84.png",
-		"runeWord82.png",
-		"runeWord80.png",
-		"runeWord78.png",
-		"runeWord76.png",
-		"runeWord74.png",
-		"runeWord72.png",
-		"runeWord70.png",
-		"runeWord68.png",
-		"runeWord66.png",
-		"runeWord64.png"})
+		Pattern("runeWord.png"):similar(0.9),
+		Pattern("runeWord98.png"):similar(0.9),
+		Pattern("runeWord96.png"):similar(0.9),
+		Pattern("runeWord94.png"):similar(0.9),
+		Pattern("runeWord92.png"):similar(0.9),
+		Pattern("runeWord90.png"):similar(0.9),
+		Pattern("runeWord88.png"):similar(0.9),
+		Pattern("runeWord86.png"):similar(0.9),
+		Pattern("runeWord84.png"):similar(0.9),
+		Pattern("runeWord82.png"):similar(0.9),
+		Pattern("runeWord80.png"):similar(0.9),
+		Pattern("runeWord78.png"):similar(0.9),
+		Pattern("runeWord76.png"):similar(0.9),
+		Pattern("runeWord74.png"):similar(0.9),
+		Pattern("runeWord72.png"):similar(0.9),
+		Pattern("runeWord70.png"):similar(0.9),
+		Pattern("runeWord68.png"):similar(0.9),
+		Pattern("runeWord66.png"):similar(0.9),
+		Pattern("runeWord64.png"):similar(0.9)})
 	if runeDimMatch == -1 then
 		runeCompDim = "nil"
 	elseif runeDimMatch == 1 then
 		runeCompDim = ""
 	else
 		runeCompDim = tostring((100 - ((runeDimMatch -1) * 2)))
+		if debugAll == true then toast("runeCompDim = "..runeCompDim.." [runeDime]") end
 	end
 end
 function runeRarityEvaluation ()
@@ -631,8 +632,8 @@ function runeSubEvaluation()
 	if varRuneRarity == -1 then rsub = "Nil" return true end
 	local subCent = ((subStatCent / (varRuneRarity - 1) ) * 100)
 	rsub = subCent
-	local wCount = 20
 	if debugAll == true then
+		local wCount = 10
 		while wCount > 0 do
 			if debugAll == true then
 				if vibe == true then vibrate(1) end
