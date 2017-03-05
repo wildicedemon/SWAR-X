@@ -170,8 +170,8 @@ addTextView("  ") newRow()
 addTextView("------------------------------Rune Evaluation Configuration----------------------------")newRow()
 addCheckBox("CBRuneEval", "Evalu Runes: ", false) addCheckBox("CBRuneEvalStar", "Stars", false) addCheckBox("CBRuneEvalRarity", "Rarity", false) addCheckBox("CBRuneEvalPrimary", "Prime", false) addCheckBox("CBRuneEvalSubCent", "SubS", false) newRow()
 addTextView("------------------------------Primary Stat Configuration--------------------------------")newRow()
-addCheckBox("runePrimeHP", "HP ", true) addCheckBox("runePrimeATK", "ATK ", true) addCheckBox("runePrimeDEF", "DEF ", true) addCheckBox("runePrimeSPD", "SPD ", true) newRow()
-addCheckBox("runePrimeCRIRate", "CRI Rate", true) addCheckBox("runePrimeCRIDmg", "CRI Dmg ", true) addCheckBox("runePrimeRES", "RES ", true)addCheckBox("runePrimeACC", "ACC ", true) newRow()
+addCheckBox("keepRunePrimeHP", "HP ", true) addCheckBox("keepRunePrimeATK", "ATK ", true) addCheckBox("keepRunePrimeDEF", "DEF ", true) addCheckBox("keepRunePrimeSPD", "SPD ", true) newRow()
+addCheckBox("keepRunePrimeCRIRate", "CRI Rate", true) addCheckBox("keepRunePrimeCRIDmg", "CRI Dmg ", true) addCheckBox("keepRunePrimeRES", "RES ", true)addCheckBox("keepRunePrimeACC", "ACC ", true) newRow()
 addSpinnerIndex("runeStars", spinnerStars, "5 Star") addSpinnerIndex("runeRarity", spinnerRarity, "Rare") addSpinnerIndex("runeSubCentage", spinnerSubCent, "25%") addTextView("Sub Stats as %") newRow()
 addTextView("  ") newRow()
 
@@ -555,7 +555,7 @@ function runeSlotEvaluation()
 	if debugAll == true then getLastMatch():highlight(tostring(runeSlotMatch),2) end
 	return runeSlotMatch
 end
-function runePrimaryEvaluation ()
+function runePrimaryEvaluation()
 	if debugAll == true then toast("[Function] runePrimaryEvaluation") end
 	local slot = runeSlotEvaluation()
 	if slot == -1 then
@@ -613,7 +613,7 @@ function runePrimaryEvaluation ()
 		end
 	end
 end
-function runeSubEvaluation ()
+function runeSubEvaluation()
 	if debugAll == true then toast("[Function] runeSubEvaluation") end
 	if debugAll == true then runeSubRegion:highlight(1) end
 	if runeSubRegion:exists(runeSubPercentage) then
@@ -625,7 +625,7 @@ function runeSubEvaluation ()
 	if runeSubRegion:exists(runeSubSPD, 3) then
 		subStatCent = subStatCent + 1
 	end
-
+	
 	if varRuneRarity == nil or CBRuneEvalRarity == false then runeRarityEvaluation() end
 	if varRuneRarity == 1 then varRuneRarity = nil return true end
 	if varRuneRarity == -1 then rsub = "Nil" return true end
@@ -1051,14 +1051,14 @@ elseif diffSelection == 3 then diffSelection = "scenarioHell"
 end
 
 primeStatKeep = {}
-if (runePrimeHP) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
-if (runePrimeATK) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
-if (runePrimeDEF) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
-if (runePrimeSPD) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
-if (runePrimeCRIRate) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
-if (runePrimeCRIDmg) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
-if (runePrimeRES) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
-if (runePrimeACC) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeHP) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeATK) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeDEF) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeSPD) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeCRIRate) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeCRIDmg) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeRES) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeACC) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
 
 -- ==================================
 -- Scenario / Dungeon / Raid routines
