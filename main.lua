@@ -738,7 +738,9 @@ function runeSale()
 			else
 				if debugAll == true then toast("Keep Rune!") wait(.75) end
 				if debugAll == true then toast("Keeping Rune!") wait(.75) end
-				multiCancel()
+				if not existsClick(get) then
+					multiCancel()
+				end
 			end
 		else
 			buttonRegion:existsClick(sell)
