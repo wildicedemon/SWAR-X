@@ -920,23 +920,11 @@ stageClickList ={
 	{target = worldMap, region = worldMapReg, id = "worldMapClick"},
 	{target = bigFlash, region = bigFlashReg, id = "bigFlashClick"}
 }
-stagelist = {
-	battleGearWheel,
-	victoryDiamond,
-	worldMap,
-	bigFlash
-}
 arenalist = {
 	battleGearWheel,
 	victoryDiamond,
 	arenaResults,
 	arenaBigWing
-}
-stagereglist = {
-	battleGearWheelReg,
-	victoryDiamondReg,
-	worldMapReg,
-	bigFlashReg
 }
 arenareglist = {
 	battleGearWheelReg,
