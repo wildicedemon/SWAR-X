@@ -56,39 +56,25 @@ bigCancalRegFlag = 0
 -- ========================
 -- Graphical User Interface
 -- ========================
--- == Resolution & StartScreen ==
+-- Resolution & StartScreen
 dialogInit()
 -- Spinners
-spinnerRes = {"2560x1600", "2560x1440", "1920", "1280", "960"}
+spinnerRes = {"2560x1600", "2560x1440", "1920x1200", "1920x1080", "1280x800", "1280x768"}
 spinnerStartscreen = {"Arena Battle Start Screen","PvE Battle Start Screen", "Either Start Screen", "Arena Battle Selection Window"}
 -- GUI
-addTextView("  ") addTextView("Resolution: ") addSpinnerIndex("setRes", spinnerRes, "2560x1440") newRow()
+addTextView("  ") addTextView("Resolution: ") addSpinner("resChoice", spinnerRes, "2560x1440") newRow()
 addTextView("  ") newRow()
 addTextView("  ") addTextView("StartScreen: ") addSpinnerIndex("startScreen", spinnerStartscreen, "PvE Battle Start Screem") newRow()
 addTextView("  ") newRow()
-dialogShow("Dimension Search Reference")
+dialogShow("Resolution and StartScreen")
 
 -- Resolution of images and compareDimension
-if (setRes) == 1 then
-	dofile(localPath.."lib/regions_2560x1600.lua")
-	imgPath = imgPath.."/2560x1600"
+if (resChoice ~= nil) then
+	 dofile(localPath.."lib/regions_"..resChoice..".lua")
+	 imgPath = imgPath.."/"..resChoice
 	setImagePath(imgPath)
-elseif (setRes) == 2 then
-	dofile(localPath.."lib/regions_2560x1440.lua")
-	imgPath = imgPath.."/2560x1440"
-	setImagePath(imgPath)
-elseif (setRes) == 3 then
-	Settings:setCompareDimension(true, math.floor(setDimension()*0.75))
-	imgPath = imgPath.."/1920"
-	setImagePath(imgPath)
-elseif (setRes) == 3 then
-	Settings:setCompareDimension(true, math.floor(setDimension()*0.7))
-	imgPath = imgPath.."/1280"
-	setImagePath(imgPath)
-elseif (setRes) == 4 then
-	Settings:setCompareDimension(true, math.floor(setDimension()*0.375))
-	imgPath = imgPath.."/960"
-	setImagePath(imgPath)
+else
+	scriptExit("Error", "No resolution seems to be choosen. Please report this issue.")
 end
 
 -- Search image for autoResize
