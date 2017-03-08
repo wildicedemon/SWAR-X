@@ -108,6 +108,9 @@ requireEnergy5		= (Pattern("requireEnergy5.png"):similar(0.9))
 requireEnergy6		= (Pattern("requireEnergy6.png"):similar(0.9))
 requireEnergy7		= (Pattern("requireEnergy7.png"):similar(0.9))
 requireEnergy8		= (Pattern("requireEnergy8.png"):similar(0.9))
+scenarioNormal      = (Pattern("scenarioNormal.png"):similar(0.8))
+scenarioHard        = (Pattern("scenarioHard.png"):similar(0.8))
+scenarioHell        = (Pattern("scenarioHell.png"):similar(0.8))
 
 -- Arena related
 arenaDialog			= (Pattern("arenaDialog.png"):similar(0.7))

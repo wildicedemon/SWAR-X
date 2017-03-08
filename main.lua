@@ -968,9 +968,9 @@ cancelClickList = {
 	{target = cancelRefill, region = cancelRefillReg, id ="cancelRefillClick"}
 }
 difficultyList = {
-	Pattern("scenarioNormal.png"):similar(0.8),
-	Pattern("scenarioHard.png"):similar(0.8),
-	Pattern("scenarioHell.png"):similar(0.8)
+	scenarioNormal,	
+	scenarioHard,
+	scenarioHell
 }
 arenaRegionMatch = { eTopMon, eLeftMon, eBottomMon, eRightMon}
 --Next Area
