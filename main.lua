@@ -30,7 +30,6 @@ arenaMain = 0
 arenaExe = 1
 swipeCount = 0
 refillEnergyLimit = 0
-roundcount = 0
 rstars = 0
 rslot = 0
 rrarity = 0
@@ -105,12 +104,10 @@ end
 
 function setDimension()
 	dimension = autoResize(Pattern(searchImage):similar(0.95), 2560, false)
-
 	if dimension < 0 then
-		scriptExit("Error", "cannot find correct compare dimension")
+		scriptExit("Error", "Cannot find correct compare dimension")
 		return
 	end
-
 	return dimension
 end
 
@@ -183,7 +180,7 @@ addTextView("  ") newRow()
 addTextView("------------------------------Advanced Configuration--------------")newRow()
 addCheckBox("debugAll", "Debug ", false) addCheckBox("vibe", "Enable Vibrate ", true) addCheckBox("dim", "Dim While Running", true) newRow()
 
-dialogShow("SWAR X v0.9 Configuration")
+dialogShow("SWAR X v1.0 Configuration")
 --Dim Screen
 if (dim) then
 	setBrightness(1)
@@ -211,8 +208,6 @@ function clickButton(target, num)
 		if debugAll == true then allButton[num]:highlight(1) end
 		allButton[num]:setTargetOffset(37,0)
 		click(allButton[num])
-		--    else
-		--        toast("sellButton not found")
 	end
 end
 function refillEnergy()
@@ -281,10 +276,10 @@ function multiCancel()
 	local rewardEnd, match = regionWaitMulti(cancelClickList,45, debugAll, false)
 	if (rewardEnd == nil) then
 		toast("nil use BackUp [multiCancel]")
-		local rewardEnd, match = waitMulti(cancelClickList,45,false)
+		local rewardEnd, match = waitMulti(cancelList,45,false)
 	elseif (rewardEnd == -1) then
 		toast("-1 use BackUp [multiCancel]")
-		local rewardEnd, match = waitMulti(cancelClickList,45,false)
+		local rewardEnd, match = waitMulti(cancelList,45,false)
 	end
 	if (rewardEnd ~= nil) then click(match) end
 	if (debugAll == true) then
@@ -967,6 +962,14 @@ cancelClickList = {
 	{target = cancelLong, region = cancelLongReg, id ="cancelLongClick"},
 	{target = cancelRefill, region = cancelRefillReg, id ="cancelRefillClick"}
 }
+cancelList = {
+	ok,
+	yes,
+	cancelCross,
+	cancel2,
+	cancelLong,
+	cancelRefill
+}
 difficultyList = {
 	scenarioNormal,	
 	scenarioHard,
@@ -1108,7 +1111,7 @@ function victoryRoutine(choice, stageMatch)
 	if (sellRune) then
 		runeSale()
 	else
-		if not okenReg:existsClick(ok) then
+		if not okenReg:existsClick(ok, 1) then
 			multiCancel()
 		end
 	end
@@ -1202,25 +1205,20 @@ while true do
 	---Screen Stats
 	statsSection:highlightOff()
 	wait(.1)
+	-- statsSection:setHighlightStyle()
+	-- statsSection:setHighlightTextStyle()
+
 	statsSection:highlight("Runs: "..tostring(runsCount).."\n"
-		.." Victories: "..tostring(victoryCount).." Deaths: "..tostring(deathCount).."\n"
+		.."Victories: "..tostring(victoryCount).." Deaths: "..tostring(deathCount).."\n"
 		.."Runes Kept: "..tostring(runesKeptCount).." Runes Sold: "..tostring(runesSoldCount))
 
-
+-- ========== Arena battles ==========
 	if (AreaSelection == 12 or ArenaOverRide == 1) and currentIndex ~= 2 then
 		toast("Arena Farm Should be Activated")
 		areaGoTo(arena)
 		arenaMain = 1
 		wait(2)
 	end
---	if arenaFarm == true and currentIndex ~= 2 then
---		if timeCheck(arenaTimeFreq) == true then
---			toast("Arena Farm Should be Activated")
---			areaGoTo(arena)
---			arenaMain = 1
---			wait(1)
---		end
---	end
 
 	-- Do Arena Battles if 
 	while arenaMain == 1 do
@@ -1351,11 +1349,13 @@ while true do
 
 					--Cancel Max Monster and  Misc Menus
 					if (choice == 9) then
+						if debugAll == true then toast("Choice 9 [Cancel Max Monster & Misc Menus]") end
 						click(stageMatch)
 						wait(5)
 					end
 
 					if choice == 10 or choice == 11 then
+					if debugAll == true then toast("Choice 11 or 12 [areaGoTo]") end
 					areaGoTo(arena)
 					end
 
@@ -1381,7 +1381,6 @@ while true do
 
 -- ========== Scenario battles ==========
 	--TODO: Code to return to here we need to.
---	local choice, stageMatch = waitMultiRegIndex(stagelist, 20, false, stagereglist, currentIndex, maxIndexStageList) -- TODO: Check if this works better
 	local choice, stageMatch = regionWaitMulti(stageClickList, 20, debugAll)
 	--If we didn't find a match on the stagelist, search the bigger list
 	if (choice == -1) then
@@ -1412,7 +1411,7 @@ while true do
 
 	--Victory Routine
 	if (choice == 2)then
-		if debugAll == true then toast("Choice 2 or 5 [Victory Routine]") end
+		if debugAll == true then toast("Choice 2 [Victory Routine]") end
 		victoryRoutine(choice, stageMatch)
 	end
 
