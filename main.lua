@@ -295,13 +295,6 @@ function arenaRefresh()
 
 	end
 end
-function checkPlayAndPause()
-	if debugAll == true then toast("[Function] checkPlayAndPause") end
-	if debugAll == true then playReg:highlight(1) end
-	playReg:existsClick(play,0)
-	if debugAll == true then pauseReg:highlight(1) end
-	pauseReg:existsClick(pause, 0)
-end
 function checkIfMax()
 	if debugAll == true then toast("[Function] checkIfMax") end
 	for i, Reg in ipairs(RegionMatchEXP) do
@@ -655,7 +648,7 @@ function runeEval()
 	if sellRune == 0 and CBRuneEvalSubCent == true and runeSubEvaluation() == false then
 		sellRune = 1
 	end
-
+	
 	runeEvalStats:highlight("Stars: "..tostring(rstars).."\n"..
 							"Slot: "..tostring(rslot).."\n"..
 							"Rarity: "..rrarity.."\n"..
@@ -686,8 +679,10 @@ function runeSale()
 	if debugAll == true then toast("[Function] runeSale") end
 	--TODO: This is where to Modify for only selling 5 and 6 star runes.
 	if (buttonRegion:exists(sell)) then
-		if debugAll == true then toast("Found: Sell Rune Png") end
-		if debugAll == true then getLastMatch():highlight(0.5) end
+		if debugAll == true then 
+			toast("Found: Sell Rune img") 
+			getLastMatch():highlight(0.5) 
+		end
 		wait(1)
 		if CBRuneEval == true then
 			if runeEval() == true then
@@ -895,24 +890,18 @@ end
 -- =============================
 -- Image Matching & Region Lists
 -- =============================
-stageClickList ={
+stageClickList = {
 	{target = battleGearWheel, region = battleGearWheelReg, id = "battleGearWheelClick"},
 	{target = victoryDiamond, region = victoryDiamondReg, id = "victoryDiamondClick"},
 	{target = worldMap, region = worldMapReg, id = "worldMapClick"},
 	{target = bigFlash, region = bigFlashReg, id = "bigFlashClick"},
 	{target = defeatedDiamond, region = left, id = "defeatedDiamondClick"}
 }
-arenalist = {
-	battleGearWheel,
-	victoryDiamond,
-	arenaResults,
-	arenaBigWing
-}
-arenareglist = {
-	battleGearWheelReg,
-	victoryDiamondReg,
-	arenaResultsReg,
-	arenaBigWingReg
+arenaClickList = {
+	{target = battleGearWheel, region = battleGearWheelReg, id = "battleGearWheelClick"},
+	{target = victoryDiamond, region = victoryDiamondReg, id = "victoryDiamondClick"},
+	{target = arenaResults, region = arenaResultsReg, id = "arenaResultsClick"},
+	{target = arenaBigWing, region = arenaBigWingReg, id = "arenaBigWingClick"}
 }
 backList = {
 	battleGearWheel,
@@ -1066,9 +1055,15 @@ function battleRoutine(choice, stageMatch)
 		battleGearWheelReg = regionFinder(stageMatch, 2)
 		battleGearWheelRegFlag = 1
 	end
-	if debugAll == true then toast("[Battle Routine]") end
+
 	if AMonMax == 2 then AMonMax = 0 end
-	checkPlayAndPause()
+
+	arenaDialogReg:existsClick(arenaDialog,0)
+	if debugAll == true then arenaDialogReg:highlight(0.5) end	
+	playReg:existsClick(play,0)
+	if debugAll == true then playReg:highlight(1) end	
+	pauseReg:existsClick(pause, 0)
+	if debugAll == true then pauseReg:highlight(1) end
 end
 -- Victory Routine
 function victoryRoutine(choice, stageMatch)
@@ -1234,18 +1229,19 @@ while true do
 
 				while arenaExe == 1 do
 					--------------------------------------------------------------------------------------------------------
-					local choice, stageMatch = waitMultiRegIndex(arenalist, 20, false, arenareglist, currentIndex, maxIndexStageList)
+					local choice, stageMatch = regionWaitMulti(arenaClickList, 20, debugAll)
+					--If we didn't find a match on the arenaClickList, search the bigger list
 					if (choice == -1) then
-						toast("Unknown Error [No StageMatch")
+						toast("No match found [arenaClickList]")
 						choice, stageMatch = waitMulti(arenabackList, 20*60, false)
-						toast("[Fault Search] Using Extensive Search List")
 
 						if (choice == -1) then
+							if debugAll == true then toast("Choice -1 [Multi Cancel]") end
 							multiCancel()
 							wait(1)
-							toast("[multiCancel] Called as an end all")
 						end
 					end
+
 					if debugAll == true then stageMatch:highlight(1) end
 					--------------------------------------------------------------------------------------------------------
 					---Starts the Fight
@@ -1272,27 +1268,13 @@ while true do
 					--------------------------------------------------------------------------------------------------------
 					---Events During the Actual Battle
 					if (choice == 1) then
-						currentIndex = 1
-						if battleGearWheelRegFlag == 0 then
-							battleGearWheelReg = regionFinder(stageMatch, 2)
-							battleGearWheelRegFlag = 1
-						end
-						if debugAll == true then toast("Arena - [Battle Routine]") end
-						arenaDialogReg:existsClick(arenaDialog,0)
-						checkPlayAndPause()
+						if debugAll == true then toast("Choice 1 [Battle Routine]") end
+						battleRoutine(choice, stageMatch)
 					end
 					--------------------------------------------------------------------------------------------------------
 					---At End of fight Contols What Happens
 					if (choice == 2) then
-						if debugAll == true then toast("Choice 2,5 [End of Battle Arena]") end
-						if victoryDiamondRegFlag == 0 then
-							victoryDiamondReg = regionFinder(stageMatch, 2)
-							victoryDiamondRegFlag = 1
-						end
-						currentIndex = 2
-						local randomInstance = math.random(0,2)
-						local randomTime = math.random(0,90)
-						continueClick(1800, 300, 15, 15, 2)
+						victoryRoutine(choice, stageMatch)
 					end
 
 					--------------------------------------------------------------------------------------------------------
@@ -1305,8 +1287,8 @@ while true do
 						break
 					end
 
-					---Misc Checks
-					--Network  Resubmit
+					-- TODO: Misc Checks
+					-- TODO: Network  Resubmit
 
 					if (choice == 6) then
 						if refillWings == true then
