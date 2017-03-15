@@ -11,30 +11,31 @@ buttonRegion = Region(770, 990, 1020, 440)
 rechargeEnergy = Region(125,480,1320,800)
 
 runeSnap = Region(700,360,1150,1100)
-statsSection = Region(800,0,950,200) --UI for statistics of run
+statsSection = Region(2260,550,300,350)
 
 --StageList Loop Regions
-battleGearWheelReg = Region(0,1380,225,220) --Battle Fig
-victoryDiamondReg = Region(1800,670,280,260) --Victory Diamond
-worldMapReg = Region(1630,1200,200,200) --World Map
-bigFlashReg = Region(2050,1000,200,150) --Big Flash
-arenaBigWingReg = Region(2000,855,250,230) --Big Wing
-playReg =  Region(494,1452,70,90) --play Region
-pauseReg = Region(940,610,650,180) -- Pause
-arenaResultsReg = Region(235,890,250,250) --Arena Results Page
+battleGearWheelReg = Region(0,1380,225,220)
+victoryDiamondReg = Region(1800,670,280,260)
+victoryRaidDamageReg = Region(170,670,370,150)
+worldMapReg = Region(1630,1200,200,200)
+bigFlashReg = Region(2050,1000,200,150)
+arenaBigWingReg = Region(2000,855,250,230)
+playReg =  Region(494,1452,70,90)
+pauseReg = Region(940,610,650,180)
+arenaResultsReg = Region(235,890,250,250)
 bigCancalReg = Region(0,0,2560,1600)
 
 battleButtonReg = Region(1180,1315,275,255)
 areaMapReg = Region(2300,1350,220,210)
 dungeonStageReg = Region(190,400,855,1140)
 
-yesWordPngReg = Region(830,875,398,178) --yesWordPng
-okenReg = Region(1026,870,503,440) --ok.en.png
+yesWordPngReg = Region(830,875,398,178)
+okenReg = Region(1026,870,503,440)
 
-cancelCrossReg = Region(1575,190,305,800) --cancelCrossDark.png
-cancel2Reg = Region(1575,190,305,800) --cancel2.png
-cancelLongReg = Region(1575,190,305,800) --cancelLong.png
-cancelRefillReg = Region(1760,0,800,800) --cancelRefill.png
+cancelCrossReg = Region(1575,190,305,800)
+cancel2Reg = Region(1575,190,305,800)
+cancelLongReg = Region(1575,190,305,800)
+cancelRefillReg = Region(1760,0,800,800)
 
 --Ally Monster Regions
 TopMon = Region(525,300,250,250)
@@ -77,7 +78,7 @@ runeTypeAndSlotRegion = Region(800,390,900,100)
 runeRarityRegion = Region(1450, 360, 380, 400)
 runePrimeRegion = Region(980,500,600,120)
 runeSubRegion = Region(770,700,600,340)
-runeEvalStats = Region(1330,530,500,665)
+runeEvalStats = Region(1500,630,300,400)
 
 --Needs to be implemented.
 runeShopStarRegion = Region(245,298,350,325) -- UNUSED

@@ -662,7 +662,7 @@ function runeEval()
 	if sellRune == 0 and CBRuneEvalSubCent == true and runeSubEvaluation() == false then
 		sellRune = 1
 	end
-	
+
 	runeEvalStats:highlight("Stars: "..tostring(rstars).."\n"..
 							"Slot: "..tostring(rslot).."\n"..
 							"Rarity: "..rrarity.."\n"..
@@ -671,17 +671,17 @@ function runeEval()
 							"Dim: "..runeCompDim.."%")
 	wait(2)
 	if sellRune == 1 then
-		setImagePath(localPath.."runes")
-		runeSnap:save("Sell"..rrarity..filenamecount..".png")
-		filenamecount = filenamecount + 1
+		setImagePath(localPath.."runes/")
+		fileCount = fileCount + 1
+		runeSnap:save("Sold - "..rrarity.." Rune ("..fileCount..").png")
 		wait(.4)
 		runeEvalStats:highlightOff()
 		setImagePath(imgPath)
 		return true
 	else
-		setImagePath(localPath.."runes")
-		runeSnap:save("Keep"..filenamecount..".png")
-		filenamecount = filenamecount + 1
+		setImagePath(localPath.."runes/")
+        fileCount = fileCount + 1
+		runeSnap:save("Kept - "..rrarity.." Rune ("..fileCount..").png")
 		wait(.4)
 		runeEvalStats:highlightOff()
 		setImagePath(imgPath)
@@ -693,9 +693,9 @@ function runeSale()
 	if debugAll == true then toast("[Function] runeSale") end
 	--TODO: This is where to Modify for only selling 5 and 6 star runes.
 	if (buttonRegion:exists(sell)) then
-		if debugAll == true then 
-			toast("Found: Sell Rune img") 
-			getLastMatch():highlight(0.5) 
+		if debugAll == true then
+			toast("Found: Sell Rune img")
+			getLastMatch():highlight(0.5)
 		end
 		wait(1)
 		if CBRuneEval == true then
@@ -708,9 +708,9 @@ function runeSale()
 				end
 				if debugAll == true then
 					toast("Selling Rune in 15! (Screenshot taken)")
-					setImagePath(localPath.."runes")
-					runeSnap:save("Sell"..rrarity..filenamecount..".png")
-					filenamecount = filenamecount + 1
+					setImagePath(localPath.."runes/")
+					fileCount = fileCount + 1
+                    runeSnap:save("Sold - "..rrarity.." Rune ("..fileCount..").png")
 					wait(.4)
 					runeEvalStats:highlightOff()
 					setImagePath(imgPath)
@@ -765,8 +765,8 @@ function areaGoTo(areaOverride)
 			end
 			if battleButtonReg:exists(battleButton, 0) then
 				if exists(endNow, 0) then
-				keyevent(4)
-			end
+					keyevent(4)
+				end
 				loopW = -2
 				battleButtonReg:existsClick(battleButton, 0)
 				break
@@ -781,7 +781,7 @@ function areaGoTo(areaOverride)
 
 
 	local loopVarG = 1
-	if debugAll == true then toast(destination) end
+	if debugAll == true then toast("Destination to go to = "..destination) end
 	while loopVarG == 1 do
 		if existsClick(Pattern(destination):similar(0.8), 2) then
 			if debugAll == true then getLastMatch():highlight(2) end
@@ -962,17 +962,11 @@ cancelList = {
 	cancelRefill
 }
 difficultyList = {
-	scenarioNormal,	
+	scenarioNormal,
 	scenarioHard,
 	scenarioHell
 }
 arenaRegionMatch = { eTopMon, eLeftMon, eBottomMon, eRightMon}
---Next Area
-if (nextArea) then
-	print("Goto Next Area")
-else
-	print("Same Area")
-end
 if (nextArea) then
 	table.insert(stagelist, "ilin.png")
 	table.insert(stagelist, "libia.png")
@@ -1075,9 +1069,9 @@ function battleRoutine(choice, stageMatch)
 	if AMonMax == 2 then AMonMax = 0 end
 
 	arenaDialogReg:existsClick(arenaDialog,0)
-	if debugAll == true then arenaDialogReg:highlight(0.5) end	
+	if debugAll == true then arenaDialogReg:highlight(0.5) end
 	playReg:existsClick(play,0)
-	if debugAll == true then playReg:highlight(1) end	
+	if debugAll == true then playReg:highlight(1) end
 	pauseReg:existsClick(pause, 0)
 	if debugAll == true then pauseReg:highlight(1) end
 end
@@ -1091,6 +1085,7 @@ function victoryRoutine(choice, stageMatch)
 		victoryDiamondRegFlag = 1
 	end
 
+	-- TODO: Don't do checkIfMax() if arena
 	local randomInstance = math.random(0,2)
 	local randomTime = math.random(0,90)
 	if skip == false then

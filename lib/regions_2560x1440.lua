@@ -9,7 +9,7 @@ bottomLeft = Region(0, 880, 684, 556)
 buttonRegion = Region(768, 964, 1028, 428)
 rechargeEnergy = Region(400,400,650,550)
 runeSnap = Region(700,0,1150,1440)
-statsSection = Region(800,0,950,200)
+statsSection = Region(2160,400,400,600)
 
 --StageList Loop Regions
 battleGearWheelReg = Region(0,1220,225,221) --Battle Fig
