@@ -67,14 +67,22 @@ bigCancalRegFlag = 0
 -- Resolution & StartScreen
 dialogInit()
 -- Spinners
+
 spinnerRes = {"2560x1600", "2560x1440", "1920x1200", "1920x1080", "1280x800", "1280x768"}
-spinnerStartscreen = {"Arena Battle Start Screen","PvE Battle Start Screen", "Either Start Screen", "Arena Battle Selection Window"}
+spinnerAction = {"Dungeon / Scenario", "Trial of Ascension", "Rift of Worlds", "Rune upgrading"}
 -- GUI
-addTextView("  ") addTextView("Resolution: ") addSpinner("resChoice", spinnerRes, "2560x1440") newRow()
+addTextView("  ") addTextView("Resolution: ") 
+addTextView("  ") addTextView("Auto detected resolution: " .. appUsableSize:getX() .. "x" .. appUsableSize:getY())newRow()
+addTextView("  ") addTextView("Custom resolution: ") addSpinner("resChoice", spinnerRes, appUsableSize:getX() .. "x" .. appUsableSize:getY()) newRow()
 addTextView("  ") newRow()
-addTextView("  ") addTextView("StartScreen: ") addSpinnerIndex("startScreen", spinnerStartscreen, "PvE Battle Start Screem") newRow()
+addTextView("  ") addTextView("What would you like to do?") newRow()
+addRadioGroup("action", 1)
+addRadioButton("Dungeon / Scenario", 1)
+addRadioButton("Trial of Ascension", 2)
+addRadioButton("Rift of Worlds", 3)
+addRadioButton("Rune upgrading", 4)
 addTextView("  ") newRow()
-dialogShow("Resolution and StartScreen")
+dialogShow("Resolution & Action")
 
 -- Resolution of images and compareDimension
 if (resChoice ~= nil) then
@@ -83,26 +91,6 @@ if (resChoice ~= nil) then
 	setImagePath(imgPath)
 else
 	scriptExit("Error", "No resolution seems to be choosen. Please report this issue.")
-end
-
--- Search image for autoResize
-if startScreen == 1 then
-	searchImage = arenaBigWing
-elseif startScreen == 2 then
-	searchImage = bigFlash
-elseif startScreen == 3 then
-	searchImage = bigCancel
-elseif startScreen == 4 then
-	searchImage = cancelRefill
-end
-
-function setDimension()
-	dimension = autoResize(Pattern(searchImage):similar(0.95), 2560, false)
-	if dimension < 0 then
-		scriptExit("Error", "Cannot find correct compare dimension")
-		return
-	end
-	return dimension
 end
 
 -- == Configuration ==
@@ -138,13 +126,27 @@ spinnerAreaReturn = {
 	"Aiden Forest",
 	"Ferun Castle",
 	"Mt. Runar",
-	"Chiruka Remains"}
+	"Chiruka Remains" }
+spinnerRaidReturn = {
+	"Dark Beast",
+	"Fire Beast",
+	"Ice Beast",
+	"Light Beast",
+	"Wind Beast"
+}
 spinnerLevel = {"1","2","3","4","5","6","7","8","9","10" }
-spinnerDiff = {	"Normal","Hard","Hell" }
+spinnerDiff = {"Normal","Hard","Hell"}
+spinnerTOA = {"Normal", "Hard"}
 
 -- GUI
 addTextView("------------------------------Area Farm Configuration---------------------------------")newRow()
-addSpinnerIndex("AreaSelection", spinnerAreaReturn, "Garen Forest") addTextView("  ") addSpinnerIndex("diffSelection", spinnerDiff, "Hell") addTextView(" Lvl: ")  addSpinnerIndex("levelSelection", spinnerLevel, "1") newRow()
+if (action == 1) then
+	addSpinnerIndex("AreaSelection", spinnerAreaReturn, "Garen Forest") addTextView("  ") addSpinnerIndex("diffSelection", spinnerDiff, "Hell") addTextView(" Lvl: ")  addSpinnerIndex("levelSelection", spinnerLevel, "1") newRow()
+elseif (action == 2) then
+	addSpinnerIndex("toaSelection", spinnerTOA, "Normal") addTextView(" Lvl: ")  addSpinnerIndex("levelSelection", spinnerLevel, "1") newRow()
+elseif (action == 3) then
+	addSpinnerIndex("AreaSelection", spinnerRaidReturn, "Dark Beast") newRow()
+end
 addTextView("------------------------------Scenario Max Lv. Auto Swap---------------------------")newRow()
 addCheckBox("SwapMaxTop","Top",false) addCheckBox("SwapMaxLeft","Left",false) addCheckBox("SwapMaxRight","Right",false) addCheckBox("SwapMaxBottom","Bottom",false)        newRow()newRow()
 addTextView("----------------------------------------------------------------------------------------------------")newRow()
@@ -167,7 +169,7 @@ addSpinnerIndex("runeStars", spinnerStars, "5 Star") addSpinnerIndex("runeRarity
 addTextView("  ") newRow()
 
 addTextView("------------------------------Refill Configuration-----------------------------------")newRow()
-addCheckBox("refillEnergy", "Refill Energy with Crystal ", false) addTextView("  ") addCheckBox("limitEnergyRefills", "Energy Refill Limit: ", false)  addEditNumber("refillEnergyLimit", 60) newRow()
+addCheckBox("refillEnergy", "Refill Energy with Crystal ", false) addTextView("  ") addCheckBox("limitEnergyRefills", "Energy Refill Limit: ", false)  addEditNumber("refillEnergyLimit", 20) newRow()
 addCheckBox("refillWings", "Refill Wings with Crystal ", false) addTextView("  ") addCheckBox("limitWingsRefills", "Wing Refill Limit: ", false)  addEditNumber("refillWingsLimit", 60) newRow()
 addTextView("  ") newRow()
 
