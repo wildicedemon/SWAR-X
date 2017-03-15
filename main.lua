@@ -210,9 +210,9 @@ function refillEnergy()
 	if debugAll == true then toast("[Function] refillEnergy") end
 	if (limitEnergyRefills and refillEnergyLimit > 0 or not limitEnergyRefills) then
 		refillEnergyLimit = refillEnergyLimit - 1
-		waitClick(yes, 2)
+		waitClick(yes, 3)
 		rechargeEnergy:waitClick(rechargeFlash, 3)
-		waitClick(yesRecharge, 2)
+		waitClick(yesRecharge, 3)
 
 		-- If not enough crystals
 		if exists(yes) then
@@ -227,7 +227,7 @@ function refillEnergy()
 	else
 		keyevent(4)  -- back button
 		toast("Not enough energy, waiting 10 minutes before retrying.")
-		wait(600)
+		wait(10 * 60)
 	end
 end
 function refillArena()
@@ -251,7 +251,7 @@ function refillArena()
 	else
 		keyevent(4)  -- back button
 		toast("Not enough wings, waiting 10 minutes before retrying.")
-		wait(600)
+		wait(10 * 60)
 	end
 
 	areaGoTo(areaArena)
@@ -281,12 +281,12 @@ function multiCancel()
 	if (debugAll == true) then
 		if (rewardEnd == nil) then toast("rewardEnd returned nil [multiCancel]")
 		elseif (rewardEnd == -1) then toast("rewardEnd returned -1 [multiCancel]")
-		elseif (rewardEnd == 1) then toast("Ok Button[multiCancel]")
-		elseif (rewardEnd == 2) then toast("Yes Button [multiCancel]")
-		elseif (rewardEnd == 3) then toast("Cancel2 [multiCancel]")
-		elseif (rewardEnd == 4) then toast("Cancel Long [multiCancel]")
-		elseif (rewardEnd == 5) then toast("Cancel Button[multiCancel]")
-		elseif (rewardEnd == 6) then toast("Cancel Button [multiCancel]")
+		elseif (rewardEnd == 1) then toast("Ok [multiCancel]")
+		elseif (rewardEnd == 2) then toast("Yes [multiCancel]")
+		elseif (rewardEnd == 3) then toast("CancelCross [multiCancel]")
+		elseif (rewardEnd == 4) then toast("Cancel2 [multiCancel]")
+		elseif (rewardEnd == 5) then toast("CancelLong [multiCancel]")
+		elseif (rewardEnd == 6) then toast("CancelRefill [multiCancel]")
 		else toast("Unknown [multiCancel]") end
 	end
 end
@@ -1094,10 +1094,12 @@ function victoryRoutine(choice, stageMatch)
 		if AMonMax == 1 then continueClick(1800, 300, 15, 15, 2 + randomInstance) end
 		if AMonMax == 2 then continueClick(1800, 300, 15, 15, 2 + randomInstance) end
 	else
-		continueClick(1800, 300, 15, 15, 2)
+		setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
+		continueClick(1800, 300, 15, 15, 2 + randomInstance)
 	end
 	wait(.5)
-	continueClick(1800, 300, 15, 15, 2)
+	setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
+	continueClick(1800, 300, 15, 15, 2 + randomInstance)
 	if debugAll == true then stageMatch:highlight(0.75) end
 	wait(0.75 )
 	if (sellRune) then
@@ -1128,37 +1130,33 @@ function continueRepeatRoutine(choice, stageMatch)
 		simpleDialog("Warning", "Reach end of curent area.")
 		return
 	end
-	while true do
-		if debugAll == true then toast("While true [Continue Repeat Routine]") end
 
-		if (not flashRequireRegion:existsClick(smallFlash)) then
-			if debugAll == true then toast("smallFlash not found [Continue Repeat Routine]") end
-			flashRequireRegion:existsClick(smallFlash, 2)
-		end
+--	if (not flashRequireRegion:existsClick(smallFlash)) then
+--		if debugAll == true then toast("smallFlash not found [Continue Repeat Routine]") end
+		flashRequireRegion:existsClick(smallFlash, 2)
+--	end
 
-		wait(.5)
-		choice, listMatch = waitMulti({bigFlash, yes}, 3)
-		if (choice == 1) then break end
-		if (choice == 2) then
-			if (worldMapReg:exists(worldMap, 0) and refillEnergy) then
-				if arenaFarm == true and timeCheck(arenaTimeFreq) == true then
-					ArenaOverRide = 1
-				else
-					refillEnergy()
-				end
-				break
-			elseif (worldMapReg:exists(worldMap, 0) and arenaFarm == true) then
+	wait(.5)
+	if debugAll == true then toast("Try matching Yes [Continue Repeat Routine]") end
+	if (exists(yes, 2)) then
+		if (worldMapReg:exists(worldMap, 0) and refillEnergy) then
+			if arenaFarm == true and timeCheck(arenaTimeFreq) == true then
 				ArenaOverRide = 1
-				break
+			else
+				refillEnergy()
 			end
+		elseif (worldMapReg:exists(worldMap, 0) and arenaFarm == true) then
+			ArenaOverRide = 1
+		else
+			-- TODO: Check what this code does and why it is here
 			keyevent(4)
-			local requiredFlash = existsMultiMaxSnap(flashRequireRegion,{requireEnergy3, requireEnergy4, requireEnergy5, requireEnergy6, requireEnergy7, requireEnergy8})
+			local requiredFlash = existsMultiMaxSnap(flashRequireRegion, { requireEnergy3, requireEnergy4, requireEnergy5, requireEnergy6, requireEnergy7, requireEnergy8 })
 			if (requiredFlash == -1) then requiredFlash = 9 else requiredFlash = requiredFlash + 2 end
-			if debugAll == true then toast("Current Energy :"..tostring(keyNum()).." of "..tostring(requiredFlash).." Required") wait(.75) end
-			wait(5*60)
+			if debugAll == true then toast("Current Energy :" .. tostring(keyNum()) .. " of " .. tostring(requiredFlash) .. " Required. Waiting 10 minutes before repeating.") end
+			wait(10 * 60)
 		end
-		if (choice == -1) then keyevent(4) end
 	end
+
 end
 -- Death Routine
 function deathRoutine(choice, stageMatch)
@@ -1172,10 +1170,8 @@ function deathRoutine(choice, stageMatch)
 			continueClick(1800, 300, 50, 50, 1 + randomInstance)
 		end
 		wait(.5)
-		if (not flashRequireRegion:existsClick(smallFlash)) then
-			if debugAll == true then toast("smallFlash not found [Continue Repeat Routine]") end
-			flashRequireRegion:existsClick(smallFlash, 2)
-		end
+		if flashRequireRegion:existsClick(smallFlash) then break end
+		if debugAll == true then toast("smallFlash not found. Repeating [Death Routine]") end
 	end
 end
 
