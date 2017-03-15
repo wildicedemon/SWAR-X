@@ -90,7 +90,7 @@ runePrimeCRIDmg		= (Pattern("runePrimeCRIDmg.png"):similar(0.9))
 runePrimeRES		= (Pattern("runePrimeRES.png"):similar(0.9))
 runePrimeACC		= (Pattern("runePrimeACC.png"):similar(0.9))
 runeSubPercentage	= (Pattern("runeSubPercentage.png"):similar(0.8))
-runeSubSPD			= (Pattern("runeSubSPD.png"):similar(0.9))
+runeSubSPD			= (Pattern("runeSubSPD.png"):similar(0.84))
 
 -- Scenario / Dungeon / Raid related
 bigFlash			= (Pattern("bigFlash.png"):similar(0.9))
