@@ -10,18 +10,26 @@ imgPath = localPath.."images"
 dofile(localPath.."lib/commonLib.lua")
 dofile(localPath.."lib/images.lua")
 appUsableSize = getAppUsableScreenSize()
-toast ("CompareDimension: " .. appUsableSize:getX() .. " x " .. appUsableSize:getY())
-print ("CompareDimension: " .. appUsableSize:getX() .. " x " .. appUsableSize:getY())
-Settings:setScriptDimension(true, 2560)
+toast ("Auto Detected Resolution: " .. appUsableSize:getX() .. " x " .. appUsableSize:getY())
+Settings:setScriptDimension(true, appUsableSize:getX())
 Settings:setCompareDimension(true, appUsableSize:getX())
 Settings:set("MinSimilarity", 0.90)
 setImmersiveMode(false)
+
+-- Give more details when the script is stopped in all cases
+setStopMessage(
+	"Start time: "..os.date("%H:%M:%S - %d/%m/%Y" , os.time()).."\n"..
+	"\n"..
+	"Ankulua v"..getVersion().."\n"..
+	"Device ID: "..getDeviceID().."\n"..
+	"CompareDimension: " .. appUsableSize:getX() .. " x " .. appUsableSize:getY().."\n"
+)
 
 -- =========
 -- Variables
 -- =========
 AMonMax = 0
-filenamecount = 0
+fileCount = 0
 monsterRepCount = 0
 arenaRepCount = 0
 arenaLvlCount = 0
