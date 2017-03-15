@@ -594,7 +594,11 @@ function runePrimaryEvaluation()
 			rprime = rprime.."%"
 			return true
 		else
-			return false
+			if runePrimeMatch == 4 then -- Keep SPD runes (they will not match percentage)
+				return true
+			else
+				return false
+			end
 		end
 	end
 end
@@ -610,7 +614,7 @@ function runeSubEvaluation()
 	if runeSubRegion:exists(runeSubSPD, 3) then
 		subStatCent = subStatCent + 1
 	end
-	
+
 	if varRuneRarity == nil or CBRuneEvalRarity == false then runeRarityEvaluation() end
 	if varRuneRarity == 1 then varRuneRarity = nil return true end
 	if varRuneRarity == -1 then rsub = "Nil" return true end
