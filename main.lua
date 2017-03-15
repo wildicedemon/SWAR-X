@@ -902,20 +902,22 @@ end
 -- =============================
 stageClickList = {
 	{target = battleGearWheel, region = battleGearWheelReg, id = "battleGearWheelClick"},
-	{target = victoryDiamond, region = victoryDiamondReg, id = "victoryDiamondClick"},
+	{target = victoryDiamond, region = victoryDiamondReg, id = "victoryClick"},
+	{target = victoryRaidDamage, region = victoryRaidDamageReg, id = "victoryRaidDamage"},
 	{target = worldMap, region = worldMapReg, id = "worldMapClick"},
 	{target = bigFlash, region = bigFlashReg, id = "bigFlashClick"},
 	{target = defeatedDiamond, region = left, id = "defeatedDiamondClick"}
 }
 arenaClickList = {
 	{target = battleGearWheel, region = battleGearWheelReg, id = "battleGearWheelClick"},
-	{target = victoryDiamond, region = victoryDiamondReg, id = "victoryDiamondClick"},
+	{target = victoryDiamond, region = victoryDiamondReg, id = "victoryClick"},
 	{target = arenaResults, region = arenaResultsReg, id = "arenaResultsClick"},
 	{target = arenaBigWing, region = arenaBigWingReg, id = "arenaBigWingClick"}
 }
 backList = {
 	battleGearWheel,
 	victoryDiamond,
+	victoryRaidDamage,
 	worldMap,
 	bigFlash,
 	defeatedDiamond,
@@ -1211,7 +1213,7 @@ while true do
 		wait(2)
 	end
 
-	-- Do Arena Battles if 
+	-- Do Arena Battles if
 	while arenaMain == 1 do
 		ArenaOverRide = 0
 			if not arenaOppReg:exists(arenaSmallWing, 0) then
@@ -1348,12 +1350,12 @@ while true do
 						swipe(Location(1700,1075),Location(1700,461))
 					end
 				end
+				--Critria for refreshing the list.
 				if i >= tCount and EndofArenaL:exists(endArenaList, 0) then
 					swipeCount = 0
 					arenaExe = 0
 					arenaRefresh()
 				end
-				--Critria for refreshing the list.
 			end
 	end
 
@@ -1376,8 +1378,8 @@ while true do
 	if debugAll == true then stageMatch:highlight(1) end
 
 	--Battle Preperation Routine
-	if (choice == 4) or (choice == 6) then
-		if debugAll == true then toast("Choice 4 or 6 [Battle Preperation Routine]") end
+	if (choice == 5) or (choice == 7) then
+		if debugAll == true then toast("Choice 5 or 7 [Battle Preperation Routine]") end
 		battlePreperationRoutine(choice, stageMatch)
 	end
 
@@ -1388,20 +1390,20 @@ while true do
 	end
 
 	--Victory Routine
-	if (choice == 2)then
+	if (choice == 2) then
 		if debugAll == true then toast("Choice 2 [Victory Routine]") end
 		victoryRoutine(choice, stageMatch)
 	end
 
 	--Continue Repeat Routine
-	if (choice == 3) then
-		if debugAll == true then toast("Choice 3 [Continue / Repeat Routine]") end
+	if (choice == 3)  or (choice == 4) then
+		if debugAll == true then toast("Choice 3 or 4 [Continue / Repeat Routine]") end
 		continueRepeatRoutine(choice, stageMatch)
 	end
 
 	--Death Routine
-	if (choice == 5) then
-		if debugAll == true then toast("Choice 5 [Death Routine]") end
+	if (choice == 6) then
+		if debugAll == true then toast("Choice 6 [Death Routine]") end
 		deathRoutine(choice, stageMatch)
 	end
 
