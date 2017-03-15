@@ -14,6 +14,7 @@ statsSection = Region(2160,400,400,600)
 --StageList Loop Regions
 battleGearWheelReg = Region(0,1220,225,221) --Battle Fig
 victoryDiamondReg = Region(1800,580,350,300) --Victory Diamond
+victoryRaidDamageReg = Region(170,610,370,120)
 worldMapReg = Region(1632,1040,440,440) --World Map
 bigFlashReg = Region(2000,855,250,230) --Big Flash
 arenaBigWingReg = Region(2000,855,250,230) --Big Wing
