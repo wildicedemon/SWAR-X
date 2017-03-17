@@ -3,8 +3,8 @@
 -- 		2560 x 1600
 -- ========================
 upperRight = Region(1760, 0, 800, 800)
-right = Region(1320, 700, 950, 560)
-left = Region(300, 700, 950, 560)
+right = Region(1320, 600, 950, 560)
+left = Region(300, 600, 950, 560)
 bottomLeft = Region(0, 900, 700, 700)
 
 buttonRegion = Region(770, 990, 1020, 440)
@@ -78,7 +78,7 @@ runeTypeAndSlotRegion = Region(800,390,900,100)
 runeRarityRegion = Region(1450, 360, 380, 400)
 runePrimeRegion = Region(980,500,600,120)
 runeSubRegion = Region(770,700,600,340)
-runeEvalStats = Region(1500,630,300,400)
+runeEvalStats = Region(1510,680,300,400)
 
 --Needs to be implemented.
 runeShopStarRegion = Region(245,298,350,325) -- UNUSED
