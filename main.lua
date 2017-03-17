@@ -19,9 +19,7 @@ setImmersiveMode(false)
 -- Give more details when the script is stopped in all cases
 setStopMessage(
 	"Start time: "..os.date("%H:%M:%S - %d/%m/%Y" , os.time()).."\n"..
-	"\n"..
 	"Ankulua v"..getVersion().."\n"..
-	"Device ID: "..getDeviceID().."\n"..
 	"CompareDimension: " .. appUsableSize:getX() .. " x " .. appUsableSize:getY().."\n"
 )
 
@@ -72,15 +70,15 @@ spinnerRes = {"2560x1600", "2560x1440", "1920x1200", "1920x1080", "1280x800", "1
 spinnerAction = {"Dungeon / Scenario", "Trial of Ascension", "Rift of Worlds", "Rune upgrading"}
 -- GUI
 addTextView("  ") addTextView("Resolution: ") 
-addTextView("  ") addTextView("Auto detected resolution: " .. appUsableSize:getX() .. "x" .. appUsableSize:getY())newRow()
+addTextView("  ") addTextView(appUsableSize:getX() .. "x" .. appUsableSize:getY() .. " (Auto detected)")newRow()
 addTextView("  ") addTextView("Custom resolution: ") addSpinner("resChoice", spinnerRes, appUsableSize:getX() .. "x" .. appUsableSize:getY()) newRow()
 addTextView("  ") newRow()
 addTextView("  ") addTextView("What would you like to do?") newRow()
 addRadioGroup("action", 1)
 addRadioButton("Dungeon / Scenario", 1)
-addRadioButton("Trial of Ascension", 2)
-addRadioButton("Rift of Worlds", 3)
-addRadioButton("Rune upgrading", 4)
+--addRadioButton("Trial of Ascension", 2)
+--addRadioButton("Rift of Worlds", 3)
+--addRadioButton("Rune upgrading", 4) newRow()
 addTextView("  ") newRow()
 dialogShow("Resolution & Action")
 
@@ -788,7 +786,10 @@ function areaGoTo(areaOverride)
 			wait(.75)
 			if existsClick(Pattern(destination):targetOffset(0,-80):similar(0.8), 0) then 
 				if debugAll == true then  getLastMatch():highlight(2) end
-				yesWordPngReg:existsClick(yes, 0.5) 
+				yesWordPngReg:existsClick(yes, 0.5)
+				if areaOverride == arena then
+					arenaSelectNormalReg:existsClick(arenaSelectNormal, 0.5)
+				end
 			end
 			loopVarG = 0
 			break
@@ -1099,11 +1100,12 @@ function victoryRoutine(choice, stageMatch)
 	else
 		setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
 		continueClick(1800, 300, 15, 15, 2 + randomInstance)
+		if debugAll == true then toast("continueClick #1 [Victory Routine]") end
 	end
 	wait(.5)
 	setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
 	continueClick(1800, 300, 15, 15, 2 + randomInstance)
-	if debugAll == true then stageMatch:highlight(0.75) end
+	if debugAll == true then toast("continueClick #2 [Victory Routine]") end
 	wait(0.75 )
 	if (sellRune) then
 		runeSale()
@@ -1207,6 +1209,7 @@ while true do
 	if (AreaSelection == 12 or ArenaOverRide == 1) and currentIndex ~= 2 then
 		toast("Arena Farm Should be Activated")
 		areaGoTo(arena)
+		arenaButtonReg:waitClick(arenaOrangeButton, 2)
 		arenaMain = 1
 		wait(2)
 	end

@@ -124,3 +124,8 @@ arenaBigWing			= (Pattern("arenaBigWing.png"):similar(0.8))
 arenaSmallWing			= (Pattern("arenaSmallWing.png"):similar(0.8))
 endArenaList			= (Pattern("endArenaList.png"):similar(0.9))
 rechargeWing			= (Pattern("rechargeWing.png"):similar(0.8))
+
+arenaSelectNormal       = (Pattern("arenaSelectNormal.png"):similar(0.8))
+arenaSelectWorld        = (Pattern("arenaSelectWorld.png"):similar(0.8))
+arenaBattleLog          = (Pattern("arenaBattleLog.png"):similar(0.8))
+arenaOrangeButton       = (Pattern("arenaOrangeButton.png"):similar(0.8))
