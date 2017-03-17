@@ -46,12 +46,6 @@ Based on the following criteria:
  * Arena
  * Rune upgrading
 
-## Next steps / coming features:
-- [x] Rift of World (Beasts) support
-- [ ] Rift of World (Raid) support
-- [ ] Rune evaluation based on rune efficiency
-- [ ] Avoid certain Monsters in Arena battles
-
 ## Known issues
 * **Not tested** resolutions other than 2560x1440 & 2560x1600
 * Fodder Picker: Will Skip over some monsters even though they meet the criteria
