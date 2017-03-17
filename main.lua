@@ -86,8 +86,8 @@ dialogShow("Resolution & Action")
 
 -- Resolution of images and compareDimension
 if (resChoice ~= nil) then
-	 dofile(localPath.."lib/regions_"..resChoice..".lua")
-	 imgPath = imgPath.."/"..resChoice
+	dofile(localPath.."lib/regions_"..resChoice..".lua")
+	imgPath = imgPath.."/"..resChoice
 	setImagePath(imgPath)
 else
 	scriptExit("Error", "No resolution seems to be choosen. Please report this issue.")
@@ -781,12 +781,15 @@ function areaGoTo(areaOverride)
 
 
 	local loopVarG = 1
-	if debugAll == true then toast("Destination to go to = "..destination) end
+	if debugAll == true then toast("Navigating to: "..destination) end
 	while loopVarG == 1 do
 		if existsClick(Pattern(destination):similar(0.8), 2) then
 			if debugAll == true then getLastMatch():highlight(2) end
 			wait(.75)
-			if existsClick(Pattern(destination):targetOffset(0,-80):similar(0.8), 0) then if debugAll == true then  getLastMatch():highlight(2) end end
+			if existsClick(Pattern(destination):targetOffset(0,-80):similar(0.8), 0) then 
+				if debugAll == true then  getLastMatch():highlight(2) end
+				yesWordPngReg:existsClick(yes, 0.5) 
+			end
 			loopVarG = 0
 			break
 		end
