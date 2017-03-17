@@ -54,11 +54,9 @@ NewFodder               = Region(0,850,1800,450)
 EndofMonL               = Region(1540,850,430,460)
 monListLeft             = Location(120,1090)
 monListRight            = Location(1660,1090)
-
 TopMonEXP               = Region(400,965,520,200)
 LeftMonEXP              = Region(970,965,520,200)
 RightMonEXP             = Region(1550,965,520,200)
-
 BottomMonEXP            = Region(400,1150,520,200)
 FifthMonEXP             = Region(970,1150,520,200) -- UNUSED
 SixthMonEXP             = Region(1550,1150,520,200) -- UNUSED
