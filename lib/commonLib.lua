@@ -114,7 +114,7 @@ function regionWaitMulti(target, seconds, debug, skipLocation)
                     match = getLastMatch
                 end
                 if (debug) then match:highlight(0.5) end
-                return i, t.id, match
+                return i, match, t.id
             end
         end
         if (skipLocation ~= nil) then click(skipLocation) end
@@ -194,9 +194,6 @@ function waitMultiRegIndex(target, seconds, skipLocation, reg, index, maxIndex)
         end
     end
 end
-
-
-
 
 function waitMultiClick(target, seconds)
     local timer = Timer()

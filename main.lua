@@ -10,18 +10,26 @@ imgPath = localPath.."images"
 dofile(localPath.."lib/commonLib.lua")
 dofile(localPath.."lib/images.lua")
 appUsableSize = getAppUsableScreenSize()
-toast ("CompareDimension" .. appUsableSize:getX() .. " x " .. appUsableSize:getY())
-print ("CompareDimension" .. appUsableSize:getX() .. " x " .. appUsableSize:getY())
-Settings:setScriptDimension(true, 2560)
+toast ("Auto Detected Resolution: " .. appUsableSize:getX() .. " x " .. appUsableSize:getY())
+Settings:setScriptDimension(true, appUsableSize:getX())
 Settings:setCompareDimension(true, appUsableSize:getX())
 Settings:set("MinSimilarity", 0.90)
 setImmersiveMode(false)
+
+-- Give more details when the script is stopped in all cases
+setStopMessage(
+	"Start time: "..os.date("%H:%M:%S - %d/%m/%Y" , os.time()).."\n"..
+	"\n"..
+	"Ankulua v"..getVersion().."\n"..
+	"Device ID: "..getDeviceID().."\n"..
+	"CompareDimension: " .. appUsableSize:getX() .. " x " .. appUsableSize:getY().."\n"
+)
 
 -- =========
 -- Variables
 -- =========
 AMonMax = 0
-filenamecount = 0
+fileCount = 0
 monsterRepCount = 0
 arenaRepCount = 0
 arenaLvlCount = 0
@@ -30,19 +38,22 @@ arenaMain = 0
 arenaExe = 1
 swipeCount = 0
 refillEnergyLimit = 0
-roundcount = 0
 rstars = 0
 rslot = 0
 rrarity = 0
 rprime = 0
 rsub = 0
-varRun = 0
-varDeath = 0
-varKeep = 0
 levelSelect = ""
 
---Region Update Flags
-battleFigRegFlag = 0
+-- ========== Statistics ==========
+runsCount = 0
+victoryCount = 0
+deathCount = 0
+runesKeptCount = 0
+runesSoldCount = 0
+
+-- ========== Region Update Flags ==========
+battleGearWheelRegFlag = 0
 victoryDiamondRegFlag = 0
 worldMapRegFlag = 0
 bigFlashRegFlag = 0
@@ -53,61 +64,34 @@ bigCancalRegFlag = 0
 -- ========================
 -- Graphical User Interface
 -- ========================
--- == Resolution & StartScreen ==
+-- Resolution & StartScreen
 dialogInit()
 -- Spinners
-spinnerRes = {"2560x1600", "2560x1440", "1920", "1280", "960"}
-spinnerStartscreen = {"Arena Battle Start Screen","PvE Battle Start Screen", "Either Start Screen", "Arena Battle Selection Window"}
+
+spinnerRes = {"2560x1600", "2560x1440", "1920x1200", "1920x1080", "1280x800", "1280x768"}
+spinnerAction = {"Dungeon / Scenario", "Trial of Ascension", "Rift of Worlds", "Rune upgrading"}
 -- GUI
-addTextView("  ") addTextView("Resolution: ") addSpinnerIndex("setRes", spinnerRes, "2560x1440") newRow()
-newRow()
-addTextView("  ") addTextView("StartScreen: ") addSpinnerIndex("startScreen", spinnerStartscreen, "PvE Battle Start Screem") newRow()
-dialogShow("Dimension Search Reference")
+addTextView("  ") addTextView("Resolution: ") 
+addTextView("  ") addTextView("Auto detected resolution: " .. appUsableSize:getX() .. "x" .. appUsableSize:getY())newRow()
+addTextView("  ") addTextView("Custom resolution: ") addSpinner("resChoice", spinnerRes, appUsableSize:getX() .. "x" .. appUsableSize:getY()) newRow()
+addTextView("  ") newRow()
+addTextView("  ") addTextView("What would you like to do?") newRow()
+addRadioGroup("action", 1)
+addRadioButton("Dungeon / Scenario", 1)
+addRadioButton("Trial of Ascension", 2)
+addRadioButton("Rift of Worlds", 3)
+addRadioButton("Rune upgrading", 4)
+addTextView("  ") newRow()
+dialogShow("Resolution & Action")
 
 -- Resolution of images and compareDimension
-if (setRes) == 1 then
-	dofile(localPath.."lib/regions_2560x1600.lua")
-	imgPath = imgPath.."/2560x1600"
+if (resChoice ~= nil) then
+	 dofile(localPath.."lib/regions_"..resChoice..".lua")
+	 imgPath = imgPath.."/"..resChoice
 	setImagePath(imgPath)
-elseif (setRes) == 2 then
-	dofile(localPath.."lib/regions_2560x1440.lua")
-	imgPath = imgPath.."/2560x1440"
-	setImagePath(imgPath)
-elseif (setRes) == 3 then
-	dimension = math.floor(dimension*0.75)
-	Settings:setCompareDimension(true, dimension)
-	imgPath = imgPath.."/1920"
-	setImagePath(imgPath)
-elseif (setRes) == 3 then
-	dimension = math.floor(dimension*0.5)
-	Settings:setCompareDimension(true, dimension)
-	imgPath = imgPath.."/1280"
-	setImagePath(imgPath)
-elseif (setRes) == 4 then
-	dimension = math.floor(dimension*0.375)
-	Settings:setCompareDimension(true, dimension)
-	imgPath = imgPath.."/960"
-	setImagePath(imgPath)
+else
+	scriptExit("Error", "No resolution seems to be choosen. Please report this issue.")
 end
-
--- Search image for autoResize
-if startScreen == 1 then
-	searchImage = arenaBigWing
-elseif startScreen == 2 then
-	searchImage = bigFlash
-elseif startScreen == 3 then
-	searchImage = bigCancel
-elseif startScreen == 4 then
-	searchImage = cancelRefill
-end
-
-dimension = autoResize(Pattern(searchImage):similar(0.95), 2560, false)
-
-if dimension < 0 then
-	simpleDialog("Error", "cannot find correct compare dimension")
-	return
-end
-toast (""..dimension)
 
 -- == Configuration ==
 dialogInit()
@@ -142,38 +126,57 @@ spinnerAreaReturn = {
 	"Aiden Forest",
 	"Ferun Castle",
 	"Mt. Runar",
-	"Chiruka Remains"}
+	"Chiruka Remains" }
+spinnerRaidReturn = {
+	"Dark Beast",
+	"Fire Beast",
+	"Ice Beast",
+	"Light Beast",
+	"Wind Beast"
+}
 spinnerLevel = {"1","2","3","4","5","6","7","8","9","10" }
-spinnerDiff = {	"Normal","Hard","Hell" }
+spinnerDiff = {"Normal","Hard","Hell"}
+spinnerTOA = {"Normal", "Hard"}
 
 -- GUI
 addTextView("------------------------------Area Farm Configuration---------------------------------")newRow()
-addSpinnerIndex("AreaSelection", spinnerAreaReturn, "Garen Forest") addSpinnerIndex("diffSelection", spinnerDiff, "Hell") addTextView(" Lvl: ")  addSpinnerIndex("levelSelection", spinnerLevel, "1") newRow()
-addTextView("-----------------------------Scenario Max Lv. Auto Swap---------------------------")newRow()
+if (action == 1) then
+	addSpinnerIndex("AreaSelection", spinnerAreaReturn, "Garen Forest") addTextView("  ") addSpinnerIndex("diffSelection", spinnerDiff, "Hell") addTextView(" Lvl: ")  addSpinnerIndex("levelSelection", spinnerLevel, "1") newRow()
+elseif (action == 2) then
+	addSpinnerIndex("toaSelection", spinnerTOA, "Normal") addTextView(" Lvl: ")  addSpinnerIndex("levelSelection", spinnerLevel, "1") newRow()
+elseif (action == 3) then
+	addSpinnerIndex("AreaSelection", spinnerRaidReturn, "Dark Beast") newRow()
+end
+addTextView("------------------------------Scenario Max Lv. Auto Swap---------------------------")newRow()
 addCheckBox("SwapMaxTop","Top",false) addCheckBox("SwapMaxLeft","Left",false) addCheckBox("SwapMaxRight","Right",false) addCheckBox("SwapMaxBottom","Bottom",false)        newRow()newRow()
-addTextView("-------------------------------------------------------------------------------------------------------")newRow()
-addCheckBox("debugAll", "Debug ", false) addCheckBox("nextArea", "Next Area", false) addCheckBox("sellRune", "Sell Runes ", false)    newRow()
+addTextView("----------------------------------------------------------------------------------------------------")newRow()
+addCheckBox("nextArea", "Next Area", false) addCheckBox("sellRune", "Sell Runes ", false)    newRow()
+addTextView("  ") newRow()
 
-addTextView("-----------------------------------Arena Configuration-----------------------------------")newRow()
+addTextView("------------------------------Arena Configuration-----------------------------------")newRow()
 addCheckBox("arenaFarm", "Arena Farming", false)newRow()
 addTextView("Arena Check Frequency [Mins]") addEditNumber("arenaTimeFreq", 60) newRow()
 addTextView("Max # of Enemies") addEditNumber("ArenaMaxMon", 1) newRow()
 addTextView("Max Avg Level of Enemies") addEditNumber("ArenaMaxAvgLvl", 40) newRow()
-addTextView("--------------------------Rune Evaluation Configuration----------------------------")newRow()
+addTextView("  ") newRow()
+
+addTextView("------------------------------Rune Evaluation Configuration----------------------------")newRow()
 addCheckBox("CBRuneEval", "Evalu Runes: ", false) addCheckBox("CBRuneEvalStar", "Stars", false) addCheckBox("CBRuneEvalRarity", "Rarity", false) addCheckBox("CBRuneEvalPrimary", "Prime", false) addCheckBox("CBRuneEvalSubCent", "SubS", false) newRow()
-addTextView("---------------------------Primary Stat Configuration--------------------------------")newRow()
-addCheckBox("runePrimeHP", "HP ", true) addCheckBox("runePrimeATK", "ATK ", true) addCheckBox("runePrimeDEF", "DEF ", true) addCheckBox("runePrimeSPD", "SPD ", true) newRow()
-addCheckBox("runePrimeCRIRate", "CRI Rate", true) addCheckBox("runePrimeCRIDmg", "CRI Dmg ", true) addCheckBox("runePrimeRES", "RES ", true)addCheckBox("runePrimeACC", "ACC ", true) newRow()
-
+addTextView("------------------------------Primary Stat Configuration--------------------------------")newRow()
+addCheckBox("keepRunePrimeHP", "HP ", true) addCheckBox("keepRunePrimeATK", "ATK ", true) addCheckBox("keepRunePrimeDEF", "DEF ", true) addCheckBox("keepRunePrimeSPD", "SPD ", true) newRow()
+addCheckBox("keepRunePrimeCRIRate", "CRI Rate", true) addCheckBox("keepRunePrimeCRIDmg", "CRI Dmg ", true) addCheckBox("keepRunePrimeRES", "RES ", true)addCheckBox("keepRunePrimeACC", "ACC ", true) newRow()
 addSpinnerIndex("runeStars", spinnerStars, "5 Star") addSpinnerIndex("runeRarity", spinnerRarity, "Rare") addSpinnerIndex("runeSubCentage", spinnerSubCent, "25%") addTextView("Sub Stats as %") newRow()
-addTextView("-----------------------------------Refill Configuration-----------------------------------")newRow()
-addCheckBox("refillEnergy", "Refill Energy with Crystal ", false) addTextView("  ") addCheckBox("limitEnergyRefills", "Energy Refill Limit: ", false)  addEditNumber("refillEnergyLimit", 60) newRow()
+addTextView("  ") newRow()
+
+addTextView("------------------------------Refill Configuration-----------------------------------")newRow()
+addCheckBox("refillEnergy", "Refill Energy with Crystal ", false) addTextView("  ") addCheckBox("limitEnergyRefills", "Energy Refill Limit: ", false)  addEditNumber("refillEnergyLimit", 20) newRow()
 addCheckBox("refillWings", "Refill Wings with Crystal ", false) addTextView("  ") addCheckBox("limitWingsRefills", "Wing Refill Limit: ", false)  addEditNumber("refillWingsLimit", 60) newRow()
+addTextView("  ") newRow()
 
-addTextView("--------------Advanced Configuration (only Pro version)--------------")newRow()
-addCheckBox("vibe", "Enable Vibrate", true) addCheckBox("dim", "Dim While Running", true) newRow()
+addTextView("------------------------------Advanced Configuration--------------")newRow()
+addCheckBox("debugAll", "Debug ", false) addCheckBox("vibe", "Enable Vibrate ", true) addCheckBox("dim", "Dim While Running", true) newRow()
 
-dialogShow("SWAR X v0.9 Configuration")
+dialogShow("SWAR X v1.0 Configuration")
 --Dim Screen
 if (dim) then
 	setBrightness(1)
@@ -201,17 +204,15 @@ function clickButton(target, num)
 		if debugAll == true then allButton[num]:highlight(1) end
 		allButton[num]:setTargetOffset(37,0)
 		click(allButton[num])
-		--    else
-		--        toast("sellButton not found")
 	end
 end
 function refillEnergy()
 	if debugAll == true then toast("[Function] refillEnergy") end
 	if (limitEnergyRefills and refillEnergyLimit > 0 or not limitEnergyRefills) then
 		refillEnergyLimit = refillEnergyLimit - 1
-		waitClick(yes, 2)
+		waitClick(yes, 3)
 		rechargeEnergy:waitClick(rechargeFlash, 3)
-		waitClick(yesRecharge, 2)
+		waitClick(yesRecharge, 3)
 
 		-- If not enough crystals
 		if exists(yes) then
@@ -226,7 +227,7 @@ function refillEnergy()
 	else
 		keyevent(4)  -- back button
 		toast("Not enough energy, waiting 10 minutes before retrying.")
-		wait(600)
+		wait(10 * 60)
 	end
 end
 function refillArena()
@@ -250,7 +251,7 @@ function refillArena()
 	else
 		keyevent(4)  -- back button
 		toast("Not enough wings, waiting 10 minutes before retrying.")
-		wait(600)
+		wait(10 * 60)
 	end
 
 	areaGoTo(areaArena)
@@ -268,7 +269,7 @@ end
 
 function multiCancel()
 	if debugAll == true then toast("[Function] multiCancel") end
-	local rewardEnd, match = waitMultiReg(cancelList,45, false ,cancelRegList)
+	local rewardEnd, match = regionWaitMulti(cancelClickList,45, debugAll, false)
 	if (rewardEnd == nil) then
 		toast("nil use BackUp [multiCancel]")
 		local rewardEnd, match = waitMulti(cancelList,45,false)
@@ -276,32 +277,17 @@ function multiCancel()
 		toast("-1 use BackUp [multiCancel]")
 		local rewardEnd, match = waitMulti(cancelList,45,false)
 	end
-	if (rewardEnd == nil) then
-		toast("rewardEnd returned nil [multiCancel]")
-	elseif (rewardEnd == -1) then
-		toast("rewardEnd returned -1 [multiCancel]")
-	elseif (rewardEnd == 1) then --Yes Button
-		if debugAll == true then toast("Yes Button [multiCancel]") end
-		click(match)
-	elseif (rewardEnd == 2) then --Cancel2
-		if debugAll == true then toast("Cancel2 [multiCancel]") end
-		if debugAll == true then local CancelHigh = match:getCenter() local CancelHighlight = Region(CancelHigh:getX() + 4, CancelHigh:getY() - 106 , 5, 5) CancelHighlight:highlight(5) end
-		click(match)
-	elseif (rewardEnd == 3) then --Cancel Long
-		if debugAll == true then toast("Cancel Long [multiCancel]") end
-		if debugAll == true then local CancelHigh = match:getCenter() local CancelHighlight = Region(CancelHigh:getX() + 108, CancelHigh:getY() + 17 , 5, 5) CancelHighlight:highlight(5) end
-		click(match)
-	elseif (rewardEnd == 4) then --Cancel
-		if debugAll == true then toast("Cancel Button[multiCancel]") end
-		click(match)
-	elseif (rewardEnd == 5) then --Cancel Refill Button
-		if debugAll == true then toast("Cancel Button [multiCancel]") end
-		click(match)
-	elseif (rewardEnd == 6) then --Ok Button
-		if debugAll == true then toast("Ok Button[multiCancel]") end
-		click(match)
-	else
-		if debugAll == true then toast("Unknown [multiCancel]") end
+	if (rewardEnd ~= nil) then click(match) end
+	if (debugAll == true) then
+		if (rewardEnd == nil) then toast("rewardEnd returned nil [multiCancel]")
+		elseif (rewardEnd == -1) then toast("rewardEnd returned -1 [multiCancel]")
+		elseif (rewardEnd == 1) then toast("Ok [multiCancel]")
+		elseif (rewardEnd == 2) then toast("Yes [multiCancel]")
+		elseif (rewardEnd == 3) then toast("CancelCross [multiCancel]")
+		elseif (rewardEnd == 4) then toast("Cancel2 [multiCancel]")
+		elseif (rewardEnd == 5) then toast("CancelLong [multiCancel]")
+		elseif (rewardEnd == 6) then toast("CancelRefill [multiCancel]")
+		else toast("Unknown [multiCancel]") end
 	end
 end
 function arenaRefresh()
@@ -318,13 +304,6 @@ function arenaRefresh()
 		end
 
 	end
-end
-function checkPlayAndPause()
-	if debugAll == true then toast("[Function] checkPlayAndPause") end
-	if debugAll == true then playReg:highlight(1) end
-	playReg:existsClick(play,0)
-	if debugAll == true then pauseReg:highlight(1) end
-	pauseReg:existsClick(pause, 0)
 end
 function checkIfMax()
 	if debugAll == true then toast("[Function] checkIfMax") end
@@ -400,14 +379,14 @@ function arenaLevelCheck()
 	end
 	usePreviousSnap(false)
 end
-function SwapMaxfood()
+function swapMaxFood()
 	if debugAll == true then toast("[Function] swapMaxFood") end
 	if find(bigCancel) then
 		if AMonMax == 1 then
 			AMonMax = 0
 			monsterLevelCheck()
 			while not EndofMonL:exists(endOfMonList, 0) do
-				swipe(Location(1660,1000),Location(120,1000))
+				swipe(monListRight,monListLeft)
 			end
 			wait(1)
 		while monsterRepCount > 0 do
@@ -415,7 +394,7 @@ function SwapMaxfood()
 						if debugAll == true then NewFodder:highlight(1) end
 						local FodderList = listToTable(NewFodder:findAll(fodderAnchor))
 						local tCount = tableLength(FodderList)
-						if debugAll == true then toast(tCount..": Archor's Found") end
+						if debugAll == true then toast(tCount..": Anchors Found") end
 						for i, slot in ripairs(FodderList) do
 							if (i == 1) then usePreviousSnap(false) else usePreviousSnap(true) end
 							local lv, lvfound, pFoodClick = freshFodderLevel(slot)
@@ -423,7 +402,7 @@ function SwapMaxfood()
 								if monsterRepCount <= 0 then monsterLevelCheck() end
 								if monsterRepCount <= 0 then break end
 							elseif i >= tCount then
-								swipe(Location(120,1000),Location(1660,1000))
+								swipe(monListLeft,monListRight)
 								abort = abort - 1
 								wait(1)
 							end
@@ -442,6 +421,7 @@ function runeStarEval()
 	if debugAll == true then toast("[Function] runeStarEval") end
 	local starFind = listToTable(runeStarRegion:findAll(runeStar))
 	local starCount = tableLength(starFind)
+	local runeStarWord = "runeStar"..tostring(starCount)..".png"
 	if runeStarRegion:exists(Pattern(runeStarWord):similar(.9), 3) then
 		rstars = starCount
 		if debugAll == true then runeStarsRegionD:highlight(tostring(starCount), 2) end
@@ -469,24 +449,43 @@ end
 function runeDim()
 	if debugAll == true then toast("[Function] runeDim") end
 	runeCompDim = ""
-	local runeDimMatch = existsMultiMaxSnap(runeRarityRegion,{
-		"runeWord.png","runeWord98.png","runeWord96.png","runeWord94.png","runeWord92.png","runeWord90.png","runeWord88.png","runeWord86.png","runeWord84.png","runeWord82.png","runeWord80.png","runeWord78.png","runeWord76.png","runeWord74.png","runeWord72.png","runeWord70.png","runeWord68.png","runeWord66.png","runeWord64.png"})
+	local runeDimMatch = existsMultiMaxSnap(runeTypeAndSlotRegion,{
+		Pattern("runeWord.png"):similar(0.9),
+		Pattern("runeWord98.png"):similar(0.9),
+		Pattern("runeWord96.png"):similar(0.9),
+		Pattern("runeWord94.png"):similar(0.9),
+		Pattern("runeWord92.png"):similar(0.9),
+		Pattern("runeWord90.png"):similar(0.9),
+		Pattern("runeWord88.png"):similar(0.9),
+		Pattern("runeWord86.png"):similar(0.9),
+		Pattern("runeWord84.png"):similar(0.9),
+		Pattern("runeWord82.png"):similar(0.9),
+		Pattern("runeWord80.png"):similar(0.9),
+		Pattern("runeWord78.png"):similar(0.9),
+		Pattern("runeWord76.png"):similar(0.9),
+		Pattern("runeWord74.png"):similar(0.9),
+		Pattern("runeWord72.png"):similar(0.9),
+		Pattern("runeWord70.png"):similar(0.9),
+		Pattern("runeWord68.png"):similar(0.9),
+		Pattern("runeWord66.png"):similar(0.9),
+		Pattern("runeWord64.png"):similar(0.9)})
 	if runeDimMatch == -1 then
 		runeCompDim = "nil"
 	elseif runeDimMatch == 1 then
 		runeCompDim = ""
 	else
 		runeCompDim = tostring((100 - ((runeDimMatch -1) * 2)))
+		if debugAll == true then toast("runeCompDim = "..runeCompDim.." [runeDime]") end
 	end
 end
 function runeRarityEvaluation ()
 	if debugAll == true then toast("[Function] runeRarityEvaluation") end
 	local runeRarityMatch = existsMultiMaxSnap(runeRarityRegion,{
-		"RuneRarityCommon"..runeCompDim..".png",
-		"RuneRarityMagic"..runeCompDim..".png",
-		"RuneRarityRare"..runeCompDim..".png",
-		"RuneRarityHero"..runeCompDim..".png",
-		"RuneRarityLegendary"..runeCompDim..".png"})
+		runeRarityNormal,
+		runeRarityMagic,
+		runeRarityRare,
+		runeRarityHero,
+		runeRarityLegend})
 
 		if runeRarityMatch == -1 then
 			rrarity = "Nil"
@@ -524,7 +523,7 @@ function runeSlotEvaluation()
 	if debugAll == true then toast("[Function] runeSlotEvaluation") end
 	local preMinSimilarity = Settings:get("MinSimilarity")
 	Settings:set("MinSimilarity", 0.7)
-	local runeSlotMatch = existsMultiMaxSnap(runeRarityRegion,{
+	local runeSlotMatch = existsMultiMaxSnap(runeTypeAndSlotRegion,{
 		"runeSlot1"..runeCompDim..".png",
 		"runeSlot2"..runeCompDim..".png",
 		"runeSlot3"..runeCompDim..".png",
@@ -541,7 +540,7 @@ function runeSlotEvaluation()
 	if debugAll == true then getLastMatch():highlight(tostring(runeSlotMatch),2) end
 	return runeSlotMatch
 end
-function runePrimaryEvaluation ()
+function runePrimaryEvaluation()
 	if debugAll == true then toast("[Function] runePrimaryEvaluation") end
 	local slot = runeSlotEvaluation()
 	if slot == -1 then
@@ -595,12 +594,17 @@ function runePrimaryEvaluation ()
 			rprime = rprime.."%"
 			return true
 		else
-			return false
+			if runePrimeMatch == 4 then -- Keep SPD runes (they will not match percentage)
+				return true
+			else
+				return false
+			end
 		end
 	end
 end
-function runeSubEvaluation ()
+function runeSubEvaluation()
 	if debugAll == true then toast("[Function] runeSubEvaluation") end
+	if debugAll == true then runeSubRegion:highlight(1) end
 	if runeSubRegion:exists(runeSubPercentage) then
 		subStatFind = listToTable(runeSubRegion:findAll(runeSubPercentage))
 		subStatCent = tableLength(subStatFind)
@@ -616,8 +620,8 @@ function runeSubEvaluation ()
 	if varRuneRarity == -1 then rsub = "Nil" return true end
 	local subCent = ((subStatCent / (varRuneRarity - 1) ) * 100)
 	rsub = subCent
-	local wCount = 20
 	if debugAll == true then
+		local wCount = 10
 		while wCount > 0 do
 			if debugAll == true then
 				if vibe == true then vibrate(1) end
@@ -665,23 +669,23 @@ function runeEval()
 							"Prime: "..rprime.."\n"..
 							"Sub: "..tostring(rsub).."%\n"..
 							"Dim: "..runeCompDim.."%")
-	wait(.5)
+	wait(2)
 	if sellRune == 1 then
-		setImagePath(localPath.."Runes")
-		runeSnap:save("Sell"..rrarity..filenamecount..".png")
-		filenamecount = filenamecount + 1
+		setImagePath(localPath.."runes/")
+		fileCount = fileCount + 1
+		runeSnap:save("Sold - "..rrarity.." Rune ("..fileCount..").png")
 		wait(.4)
 		runeEvalStats:highlightOff()
 		setImagePath(imgPath)
 		return true
 	else
-		setImagePath(localPath.."Runes")
-		runeSnap:save("Keep"..filenamecount..".png")
-		filenamecount = filenamecount + 1
+		setImagePath(localPath.."runes/")
+        fileCount = fileCount + 1
+		runeSnap:save("Kept - "..rrarity.." Rune ("..fileCount..").png")
 		wait(.4)
 		runeEvalStats:highlightOff()
 		setImagePath(imgPath)
-		varKeep = varKeep + 1
+		runesKeptCount = runesKeptCount + 1
 		return false
 	end
 end
@@ -689,8 +693,10 @@ function runeSale()
 	if debugAll == true then toast("[Function] runeSale") end
 	--TODO: This is where to Modify for only selling 5 and 6 star runes.
 	if (buttonRegion:exists(sell)) then
-		if debugAll == true then toast("Found: Sell Rune Png") end
-		if debugAll == true then getLastMatch():highlight(0.5) end
+		if debugAll == true then
+			toast("Found: Sell Rune img")
+			getLastMatch():highlight(0.5)
+		end
 		wait(1)
 		if CBRuneEval == true then
 			if runeEval() == true then
@@ -700,23 +706,35 @@ function runeSale()
 					wait(.5)
 					if vibe == true then vibrate(1) end
 				end
-				if debugAll == true then toast("Selling Rune in 15!") wait(15) end
+				if debugAll == true then
+					toast("Selling Rune in 15! (Screenshot taken)")
+					setImagePath(localPath.."runes/")
+					fileCount = fileCount + 1
+                    runeSnap:save("Sold - "..rrarity.." Rune ("..fileCount..").png")
+					wait(.4)
+					runeEvalStats:highlightOff()
+					setImagePath(imgPath)
+					wait(15)
+				end
 				buttonRegion:existsClick(sell, 0)
 				if debugAll == true then toast("Rune Sold!") wait(.75) end
 				existsClick(yes)
+				runesSoldCount = runesSoldCount + 1
 				local sellResponse, match = waitMulti({yes, worldMap}, 3)
 				if (sellResponse == 1) then
 					click(match)
-					print("need confirming selling rune")
 				end
 
 			else
 				if debugAll == true then toast("Keep Rune!") wait(.75) end
 				if debugAll == true then toast("Keeping Rune!") wait(.75) end
-				multiCancel()
+				if not existsClick(get) then
+					multiCancel()
+				end
 			end
 		else
 			buttonRegion:existsClick(sell)
+			runesSoldCount = runesSoldCount + 1
 			wait(.5)
 			yesWordPngReg:existsClick(yes)
 		end
@@ -732,7 +750,7 @@ function areaGoTo(areaOverride)
 		destination = areaCairos
 	end
 	if areaOverride == arena then
-		destination = areaCairos
+		destination = areaArena
 	end
 
 	if areaMapReg:exists(areaMap, 0) then
@@ -747,15 +765,15 @@ function areaGoTo(areaOverride)
 			end
 			if battleButtonReg:exists(battleButton, 0) then
 				if exists(endNow, 0) then
-				keyevent(4)
-			end
+					keyevent(4)
+				end
 				loopW = -2
 				battleButtonReg:existsClick(battleButton, 0)
 				break
 			end
 			loopW = loopW - 1
 			if loopW == 0 then
-			toast("Unknown Error{Area Return")
+			toast("Unknown Error [Area Return]")
 			end
 		end
 	end
@@ -763,7 +781,7 @@ function areaGoTo(areaOverride)
 
 
 	local loopVarG = 1
-	if debugAll == true then toast(destination) end
+	if debugAll == true then toast("Destination to go to = "..destination) end
 	while loopVarG == 1 do
 		if existsClick(Pattern(destination):similar(0.8), 2) then
 			if debugAll == true then getLastMatch():highlight(2) end
@@ -824,7 +842,7 @@ function stageSelect(stageOverride,difficultyOverride)
 
 		wait(1)
 
-		local levelSelect = "B"..tostring(levelSelection)..".png" --this is for the dungeons
+		local levelSelect = "b"..tostring(levelSelection)..".png" --this is for the dungeons
 		local loopVar = 1
 
 		while loopVar == 1 do
@@ -886,37 +904,28 @@ end
 -- =============================
 -- Image Matching & Region Lists
 -- =============================
-stagelist = {
-	battleGearWheel,
-	victoryDiamond,
-	worldMap,
-	bigFlash
+stageClickList = {
+	{target = battleGearWheel, region = battleGearWheelReg, id = "battleGearWheelClick"},
+	{target = victoryDiamond, region = victoryDiamondReg, id = "victoryClick"},
+	{target = victoryRaidDamage, region = victoryRaidDamageReg, id = "victoryRaidDamage"},
+	{target = worldMap, region = worldMapReg, id = "worldMapClick"},
+	{target = bigFlash, region = bigFlashReg, id = "bigFlashClick"},
+	{target = defeatedDiamond, region = left, id = "defeatedDiamondClick"}
 }
-arenalist = {
-	battleGearWheel,
-	victoryDiamond,
-	arenaResults,
-	arenaBigWing
-}
-stagereglist = {
-	battleFigReg,
-	victoryDiamondReg,
-	worldMapReg,
-	bigFlashReg
-}
-arenareglist = {
-	battleFigReg,
-	victoryDiamondReg,
-	arenaResultsReg,
-	arenaBigWingReg
+arenaClickList = {
+	{target = battleGearWheel, region = battleGearWheelReg, id = "battleGearWheelClick"},
+	{target = victoryDiamond, region = victoryDiamondReg, id = "victoryClick"},
+	{target = arenaResults, region = arenaResultsReg, id = "arenaResultsClick"},
+	{target = arenaBigWing, region = arenaBigWingReg, id = "arenaBigWingClick"}
 }
 backList = {
 	battleGearWheel,
 	victoryDiamond,
+	victoryRaidDamage,
 	worldMap,
 	bigFlash,
-	bigCancel,
 	defeatedDiamond,
+	bigCancel,
 	networkDelay,
 	networkConnection,
 	cancelRefill,
@@ -936,35 +945,28 @@ arenabackList = {
 	areaMap,
 	battleButton
 }
+cancelClickList = {
+	{target = ok, region = okenReg, id ="okClick"},
+	{target = yes, region = yesWordPngReg, id ="yesClick"},
+	{target = cancelCross, region = cancelCrossReg, id ="cancelCrossClick"},
+	{target = cancel2, region = cancel2Reg, id ="cancel2Click"},
+	{target = cancelLong, region = cancelLongReg, id ="cancelLongClick"},
+	{target = cancelRefill, region = cancelRefillReg, id ="cancelRefillClick"}
+}
 cancelList = {
-	yes,
 	ok,
+	yes,
 	cancelCross,
 	cancel2,
 	cancelLong,
 	cancelRefill
 }
-
 difficultyList = {
-	Pattern("scenarioNormal.png"):similar(0.8),
-	Pattern("scenarioHard.png"):similar(0.8),
-	Pattern("scenarioHell.png"):similar(0.8)
-}
-cancelRegList = {
-	yesWordPngReg, --yesWordPng
-	okenReg,  --ok.en.png
-	cancelCrossReg, --cancelCross.png
-	cancel2Reg, --cancel2.png
-	cancelLongReg, --cancelLong.png
-	cancelRefillReg --cancelRefill.png
+	scenarioNormal,
+	scenarioHard,
+	scenarioHell
 }
 arenaRegionMatch = { eTopMon, eLeftMon, eBottomMon, eRightMon}
---Next Area
-if (nextArea) then
-	print("Goto Next Area")
-else
-	print("Same Area")
-end
 if (nextArea) then
 	table.insert(stagelist, "ilin.png")
 	table.insert(stagelist, "libia.png")
@@ -1029,14 +1031,156 @@ elseif diffSelection == 3 then diffSelection = "scenarioHell"
 end
 
 primeStatKeep = {}
-if (runePrimeHP) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
-if (runePrimeATK) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
-if (runePrimeDEF) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
-if (runePrimeSPD) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
-if (runePrimeCRIRate) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
-if (runePrimeCRIDmg) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
-if (runePrimeRES) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
-if (runePrimeACC) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeHP) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeATK) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeDEF) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeSPD) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeCRIRate) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeCRIDmg) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeRES) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+if (keepRunePrimeACC) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
+
+-- ==================================
+-- Scenario / Dungeon / Raid routines
+-- ==================================
+-- Battle Preperation Routine
+function battlePreperationRoutine(choice, stageMatch)
+	currentIndex = 4
+	if AMonMax == 1 then swapMaxFood() end
+	if AMonMax == 2 then AMonMax = 0 end
+	if bigFlashRegFlag == 0 then
+		bigFlashReg = regionFinder(stageMatch, 2)
+		bigFlashRegFlag = 1
+	end
+
+	if bigFlashReg:existsClick(bigFlash) then
+		existsClick(yes, 2) -- Click yes in "No Leadership skill" pop-up
+		runsCount = runsCount + 1
+	end
+end
+-- Battle Routine
+function battleRoutine(choice, stageMatch)
+	currentIndex = 1
+	if battleGearWheelRegFlag == 0 then
+		battleGearWheelReg = regionFinder(stageMatch, 2)
+		battleGearWheelRegFlag = 1
+	end
+
+	if AMonMax == 2 then AMonMax = 0 end
+
+	arenaDialogReg:existsClick(arenaDialog,0)
+	if debugAll == true then arenaDialogReg:highlight(0.5) end
+	playReg:existsClick(play,0)
+	if debugAll == true then playReg:highlight(1) end
+	pauseReg:existsClick(pause, 0)
+	if debugAll == true then pauseReg:highlight(1) end
+end
+-- Victory Routine
+function victoryRoutine(choice, stageMatch)
+	victoryCount = victoryCount + 1
+	toast("Victory! [Victory Routine] #"..tostring(victoryCount))
+	currentIndex = 2
+	if victoryDiamondRegFlag == 0 then
+		victoryDiamondReg = regionFinder(stageMatch, 2)
+		victoryDiamondRegFlag = 1
+	end
+
+	-- TODO: Don't do checkIfMax() if arena
+	local randomInstance = math.random(0,2)
+	local randomTime = math.random(0,90)
+	if skip == false then
+		if AMonMax == 0 then checkIfMax() end
+		setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
+		if AMonMax == 1 then continueClick(1800, 300, 15, 15, 2 + randomInstance) end
+		if AMonMax == 2 then continueClick(1800, 300, 15, 15, 2 + randomInstance) end
+	else
+		setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
+		continueClick(1800, 300, 15, 15, 2 + randomInstance)
+	end
+	wait(.5)
+	setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
+	continueClick(1800, 300, 15, 15, 2 + randomInstance)
+	if debugAll == true then stageMatch:highlight(0.75) end
+	wait(0.75 )
+	if (sellRune) then
+		runeSale()
+	else
+		if not okenReg:existsClick(ok, 1) then
+			multiCancel()
+		end
+	end
+end
+
+-- Continue / Repeat routine
+function continueRepeatRoutine(choice, stageMatch)
+
+	if worldMapRegFlag == 0 then
+		worldMapReg = regionFinder(stageMatch, 2)
+		worldMapRegFlag = 1
+	end
+
+	currentIndex = 3
+	--Next Area
+	if (nextArea and (stagelist[choice] == "ilin.png" or stagelist[choice] == "libia.png" or stagelist[choice] == "dulander.png")) then
+		while (existsClick(stagelist[choice], 0)) do
+			wait(1)
+		end
+	end
+	if (nextArea and flashRequireRegion:exists(requireEnergy0,0)) then
+		simpleDialog("Warning", "Reach end of curent area.")
+		return
+	end
+
+--	if (not flashRequireRegion:existsClick(smallFlash)) then
+--		if debugAll == true then toast("smallFlash not found [Continue Repeat Routine]") end
+		flashRequireRegion:existsClick(smallFlash, 2)
+--	end
+
+	wait(.5)
+	if debugAll == true then toast("Try matching Yes [Continue Repeat Routine]") end
+	if (exists(yes, 2)) then
+		if (worldMapReg:exists(worldMap, 0) and refillEnergy) then
+			if arenaFarm == true and timeCheck(arenaTimeFreq) == true then
+				ArenaOverRide = 1
+			else
+				refillEnergy()
+			end
+		elseif (worldMapReg:exists(worldMap, 0) and arenaFarm == true) then
+			ArenaOverRide = 1
+		else
+			-- TODO: Check what this code does and why it is here
+			keyevent(4)
+			local requiredFlash = existsMultiMaxSnap(flashRequireRegion, { requireEnergy3, requireEnergy4, requireEnergy5, requireEnergy6, requireEnergy7, requireEnergy8 })
+			if (requiredFlash == -1) then requiredFlash = 9 else requiredFlash = requiredFlash + 2 end
+			if debugAll == true then toast("Current Energy :" .. tostring(keyNum()) .. " of " .. tostring(requiredFlash) .. " Required. Waiting 10 minutes before repeating.") end
+			wait(10 * 60)
+		end
+	end
+
+end
+-- Death Routine
+function deathRoutine(choice, stageMatch)
+	deathCount = deathCount + 1
+	toast("Defeated! [Death Routine] #"..tostring(deathCount))
+	while true do
+		Region(1300,900,800,300):existsClick(defeatedNo)
+		AMonMax = 0
+		if victoryDiamondReg:exists(victoryDiamond, 5) then
+			local randomInstance = math.random(0,1)
+			continueClick(1800, 300, 50, 50, 1 + randomInstance)
+		end
+		wait(.5)
+		if flashRequireRegion:existsClick(smallFlash) then break end
+		if debugAll == true then toast("smallFlash not found. Repeating [Death Routine]") end
+	end
+end
+
+-- Network Delay / Connection Routine
+function networkDelayConnectionRoutine(choice, stageMatch)
+	existsClick(yes)
+	wait(5)
+end
+--
 
 -- ========================
 -- Main Botting Application
@@ -1049,26 +1193,24 @@ while true do
 	---Screen Stats
 	statsSection:highlightOff()
 	wait(.1)
-	statsSection:highlight("Runs:"..tostring(varRun).." Deaths:"..tostring(varDeath).."\n".."Runes Kept:"..tostring(varKeep))
+	-- statsSection:setHighlightStyle()
+	-- statsSection:setHighlightTextStyle()
 
+	statsSection:highlight("Runs: "..tostring(runsCount).."\n"
+		.."Victories: "..tostring(victoryCount).." Deaths: "..tostring(deathCount).."\n"
+		.."Runes Kept: "..tostring(runesKeptCount).." Runes Sold: "..tostring(runesSoldCount))
 
+-- ========== Arena battles ==========
 	if (AreaSelection == 12 or ArenaOverRide == 1) and currentIndex ~= 2 then
 		toast("Arena Farm Should be Activated")
 		areaGoTo(arena)
 		arenaMain = 1
 		wait(2)
 	end
---	if arenaFarm == true and currentIndex ~= 2 then
---		if timeCheck(arenaTimeFreq) == true then
---			toast("Arena Farm Should be Activated")
---			areaGoTo(arena)
---			arenaMain = 1
---			wait(1)
---		end
---	end
 
+	-- Do Arena Battles if
 	while arenaMain == 1 do
-			ArenaOverRide = 0
+		ArenaOverRide = 0
 			if not arenaOppReg:exists(arenaSmallWing, 0) then
 				swipeCount = 0
 				arenaExe = 0
@@ -1094,18 +1236,19 @@ while true do
 
 				while arenaExe == 1 do
 					--------------------------------------------------------------------------------------------------------
-					local choice, stageMatch = waitMultiRegIndex(arenalist, 20, false, arenareglist, currentIndex, maxIndexStageList)
+					local choice, stageMatch = regionWaitMulti(arenaClickList, 20, debugAll)
+					--If we didn't find a match on the arenaClickList, search the bigger list
 					if (choice == -1) then
-						toast("Unknown Error [No StageMatch")
+						toast("No match found [arenaClickList]")
 						choice, stageMatch = waitMulti(arenabackList, 20*60, false)
-						toast("[Fault Search] Using Extensive Search List")
 
 						if (choice == -1) then
+							if debugAll == true then toast("Choice -1 [Multi Cancel]") end
 							multiCancel()
 							wait(1)
-							toast("[multiCancel] Called as an end all")
 						end
 					end
+
 					if debugAll == true then stageMatch:highlight(1) end
 					--------------------------------------------------------------------------------------------------------
 					---Starts the Fight
@@ -1132,27 +1275,13 @@ while true do
 					--------------------------------------------------------------------------------------------------------
 					---Events During the Actual Battle
 					if (choice == 1) then
-						currentIndex = 1
-						if battleFigRegFlag == 0 then
-							battleFigReg = regionFinder(stageMatch, 2)
-							battleFigRegFlag = 1
-						end
-						if debugAll == true then toast("Arena - [Battle Routine]") end
-						arenaDialogReg:existsClick(arenaDialog,0)
-						checkPlayAndPause()
+						if debugAll == true then toast("Choice 1 [Battle Routine]") end
+						battleRoutine(choice, stageMatch)
 					end
 					--------------------------------------------------------------------------------------------------------
 					---At End of fight Contols What Happens
 					if (choice == 2) then
-						if debugAll == true then toast("Choice 2,5 [End of Battle Arena]") end
-						if victoryDiamondRegFlag == 0 then
-							victoryDiamondReg = regionFinder(stageMatch, 2)
-							victoryDiamondRegFlag = 1
-						end
-						currentIndex = 2
-						local randomInstance = math.random(0,2)
-						local randomTime = math.random(0,90)
-						continueClick(1800, 300, 15, 15, 2)
+						victoryRoutine(choice, stageMatch)
 					end
 
 					--------------------------------------------------------------------------------------------------------
@@ -1165,8 +1294,8 @@ while true do
 						break
 					end
 
-					---Misc Checks
-					--Network  Resubmit
+					-- TODO: Misc Checks
+					-- TODO: Network  Resubmit
 
 					if (choice == 6) then
 						if refillWings == true then
@@ -1195,11 +1324,13 @@ while true do
 
 					--Cancel Max Monster and  Misc Menus
 					if (choice == 9) then
+						if debugAll == true then toast("Choice 9 [Cancel Max Monster & Misc Menus]") end
 						click(stageMatch)
 						wait(5)
 					end
 
 					if choice == 10 or choice == 11 then
+					if debugAll == true then toast("Choice 11 or 12 [areaGoTo]") end
 					areaGoTo(arena)
 					end
 
@@ -1214,174 +1345,78 @@ while true do
 						swipe(Location(1700,1075),Location(1700,461))
 					end
 				end
+				--Critria for refreshing the list.
 				if i >= tCount and EndofArenaL:exists(endArenaList, 0) then
 					swipeCount = 0
 					arenaExe = 0
 					arenaRefresh()
 				end
-				--Critria for refreshing the list.
 			end
 	end
 
 -- ========== Scenario battles ==========
 	--TODO: Code to return to here we need to.
-	local choice, stageMatch = waitMultiRegIndex(stagelist, 15, false, stagereglist, currentIndex, maxIndexStageList)
+	local choice, stageMatch = regionWaitMulti(stageClickList, 20, debugAll)
 	--If we didn't find a match on the stagelist, search the bigger list
 	if (choice == -1) then
-		toast("[stageList] No match found")
+		if debugAll == true then toast("No match found [StageList]") end
 		choice, stageMatch = waitMulti(backList, 20*60, false)
-		toast("[backList] Using Extensive Search List")
 
 		--If we didn't find a match again try to end all actions
 		if (choice == -1) then
+			if debugAll == true then toast("Choice -1 [Multi Cancel]") end
 			multiCancel()
 			wait(1)
-			toast("[multiCancel] Try cancelling all actions")
 		end
 	end
-	if debugAll == true then stageMatch:highlight(1) end
-	--Battle Preperation Routine
-	if (choice == 4) or (choice == 6) then
-		currentIndex = 4
-		if debugAll == true then toast("[Battle Preperation]") end
-		if AMonMax == 1 then swapMaxFood() end
-		if AMonMax == 2 then AMonMax = 0 end
-		if bigFlashRegFlag == 0 then
-			bigFlashReg = regionFinder(stageMatch, 2)
-			bigFlashRegFlag = 1
-		end
 
-		if bigFlashReg:existsClick(bigFlash) then
-			existsClick(yes, 2) -- Click yes in "No Leadership skill" pop-up
-			varRun = varRun + 1
-		end
+	if debugAll == true then stageMatch:highlight(1) end
+
+	--Battle Preperation Routine
+	if (choice == 5) or (choice == 7) then
+		if debugAll == true then toast("Choice 5 or 7 [Battle Preperation Routine]") end
+		battlePreperationRoutine(choice, stageMatch)
 	end
 
 	--Battle Routine
 	if (choice == 1) then
-		currentIndex = 1
-		if battleFigRegFlag == 0 then
-			battleFigReg = regionFinder(stageMatch, 2)
-			battleFigRegFlag = 1
-		end
-		if debugAll == true then toast("[Battle Routine]") end
-		if AMonMax == 2 then AMonMax = 0 end
-		checkPlayAndPause()
+		if debugAll == true then toast("Choice 1 [Battle Routine]") end
+		battleRoutine(choice, stageMatch)
 	end
 
 	--Victory Routine
-	if (choice == 2) or (choice == 5) then
-		if debugAll == true then toast("Choice 2 or 5 [Victory Routine]") end
-		if victoryDiamondRegFlag == 0 then
-			victoryDiamondReg = regionFinder(stageMatch, 2)
-			victoryDiamondRegFlag = 1
-		end
-		currentIndex = 2
-		local randomInstance = math.random(0,2)
-		local randomTime = math.random(0,90)
-	if skip == false then
-		if AMonMax == 0 then checkIfMax() end
-			setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
-		if AMonMax == 1 then continueClick(1800, 300, 15, 15, 2 + randomInstance) end
-		if AMonMax == 2 then continueClick(1800, 300, 15, 15, 2 + randomInstance) end
-	else
-		continueClick(1800, 300, 15, 15, 2)
-	end
-	wait(.5)
-		continueClick(1800, 300, 15, 15, 2)
-		if debugAll == true then stageMatch:highlight(0.75) end
-		  wait(0.75 )
-		if (sellRune) then
-			runeSale()
-		else
-			multiCancel()
-		end
+	if (choice == 2) then
+		if debugAll == true then toast("Choice 2 [Victory Routine]") end
+		victoryRoutine(choice, stageMatch)
 	end
 
 	--Continue Repeat Routine
-	if (choice == 3) then
-		if worldMapRegFlag == 0 then
-			worldMapReg = regionFinder(stageMatch, 2)
-			worldMapRegFlag = 1
-		end
-
-		if debugAll == true then toast("Choice 7 [Continue Repeat Routine]") end
-		currentIndex = 3
-	--Next Area
-		if (nextArea and (stagelist[choice] == "ilin.png" or stagelist[choice] == "libia.png" or stagelist[choice] == "dulander.png")) then
-			while (existsClick(stagelist[choice], 0)) do
-			   wait(1)
-			end
-		end
-		if (nextArea and flashRequireRegion:exists(requireEnergy0,0)) then
-			simpleDialog("Warning", "Reach end of curent area.")
-			return
-		end
-		while true do
-		if debugAll == true then toast("While true [Continue Repeat Routine]") end
-
-		if (not flashRequireRegion:existsClick(smallFlash)) then
-			if debugAll == true then toast("smallFlash not found [Continue Repeat Routine]") end
-			flashRequireRegion:existsClick(smallFlash, 2)
-		end
-
-		wait(.5)
-		choice, listMatch = waitMulti({bigFlash, yes}, 3)
-		if (choice == 1) then break end
-		if (choice == 2) then
-			if (worldMapReg:exists(worldMap, 0) and refillEnergy) then
-				if arenaFarm == true and timeCheck(arenaTimeFreq) == true then
-					ArenaOverRide = 1
-				else
-					refillEnergy()
-				end
-				break
-			elseif (worldMapReg:exists(worldMap, 0) and arenaFarm == true) then
-				ArenaOverRide = 1
-				break
-			end
-			keyevent(4)
-			local requiredFlash = existsMultiMaxSnap(flashRequireRegion,{requireEnergy3, requireEnergy4, requireEnergy5, requireEnergy6, requireEnergy7, requireEnergy8})
-			if (requiredFlash == -1) then requiredFlash = 9 else requiredFlash = requiredFlash + 2 end
-			if debugAll == true then toast("Current Energy :"..tostring(keyNum()).." of "..tostring(requiredFlash).." Required") wait(.75) end
-			wait(5*60)
-		end
-		if (choice == -1) then keyevent(4) end
-		end
+	if (choice == 3)  or (choice == 4) then
+		if debugAll == true then toast("Choice 3 or 4 [Continue / Repeat Routine]") end
+		continueRepeatRoutine(choice, stageMatch)
 	end
 
 	--Death Routine
-	if (choice == 7) then
-		varDeath = varDeath + 1
-		toast("Defeated: [Death Routine] #"..tostring(varDeath))
-		while true do
-			Region(1600,1000,300,300):existsClick(defeatedNo)
-			AMonMax = 0
-			if victoryDiamondReg:exists(victoryDiamond, 5) then
-				local randomInstance = math.random(0,1)
-				continueClick(1800, 300, 50, 50, 1 + randomInstance)
-			end
-			wait(.5)
-			if (not flashRequireRegion:existsClick(smallFlash)) then
-				if debugAll == true then toast("smallFlash not found [Continue Repeat Routine]") end
-				flashRequireRegion:existsClick(smallFlash, 2)
-			end
-		end
+	if (choice == 6) then
+		if debugAll == true then toast("Choice 6 [Death Routine]") end
+		deathRoutine(choice, stageMatch)
 	end
 
 	--Network Resubmit
 	if (choice == 8) or (choice == 9) then
-			existsClick(yes)
-			wait(5)
+		if debugAll == true then toast("Choice 8 or 9 [Network Delay / Connection Routine]") end
+		networkDelayConnectionRoutine(choice, stageMatch)
 	end
 
 	--Cancel Max Monster and Misc Menus
 	if (choice == 10) then
+		if debugAll == true then toast("Choice 10 [Cancel Max Monster & Misc Menus]") end
 		click(stageMatch)
 		wait(5)
 	end
 
 	if choice == 11 or choice == 12 then
+		if debugAll == true then toast("Choice 11 or 12 [areaGoTo]") end
 		areaGoTo()
 	end
 end

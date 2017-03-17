@@ -9,11 +9,12 @@ bottomLeft = Region(0, 880, 684, 556)
 buttonRegion = Region(768, 964, 1028, 428)
 rechargeEnergy = Region(400,400,650,550)
 runeSnap = Region(700,0,1150,1440)
-statsSection = Region(800,0,950,200)
+statsSection = Region(2160,400,400,600)
 
 --StageList Loop Regions
-battleFigReg = Region(0,1220,225,221) --Battle Fig
+battleGearWheelReg = Region(0,1220,225,221) --Battle Fig
 victoryDiamondReg = Region(1800,580,350,300) --Victory Diamond
+victoryRaidDamageReg = Region(170,610,370,120)
 worldMapReg = Region(1632,1040,440,440) --World Map
 bigFlashReg = Region(2000,855,250,230) --Big Flash
 arenaBigWingReg = Region(2000,855,250,230) --Big Wing
@@ -28,7 +29,7 @@ dungeonStageReg = Region(300,350,800,1050)
 yesWordPngReg = Region(798,751,530,263) --yesWordPng
 cancel2Reg = Region(1577,190,300,800) --cancel2.png
 cancelLongReg = Region(1050,150,800,400) --cancelLong.png
-cancelCrossDarkReg = Region(1575,95,305,585) --cancelCrossDark.png
+cancelCrossReg = Region(1575,95,305,585) --cancelCrossDark.png
 cancelRefillReg = Region(2031,91,208,219) --cancelRegill.png
 okenReg = Region(1026,949,503,310) --ok.en.png
 
@@ -39,6 +40,8 @@ RightMon = Region(764,376,320,320)
 BottomMon = Region(492,520,320,320)
 NewFodder = Region(0,780,1800,380)
 EndofMonL = Region(1660,780,400,460)
+monListLeft = Location(120,1000)
+monListRight = Location(1660,1000)
 TopMonEXP = Region(600,890,460,220)
 LeftMonEXP = Region(1100,890,460,220)
 RightMonEXP = Region(1620,890,460,220)
@@ -60,6 +63,7 @@ arenaDialogReg = Region(0,1011,190,190)
 --Rune Evaluation Regions
 runeStarRegion = Region(755,377,350,325)
 runeStarsRegionD = Region(850,475,150,150) --Debug Rune Star Display
+runeTypeAndSlotRegion = Region(800,390,900,100)
 runeRarityRegion = Region(766,250,1025,300)
 runePrimeRegion = Region(930,430,600,120)
 runeSubRegion = Region(770,625,480,325)
