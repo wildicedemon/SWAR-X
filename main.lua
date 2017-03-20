@@ -66,7 +66,7 @@ bigCancalRegFlag = 0
 dialogInit()
 -- Spinners
 
-spinnerRes = {"2560x1600", "2560x1440", "1920x1200", "1920x1080", "1280x800", "1280x768"}
+spinnerRes = {"2560x1600", "2560x1440", "1920x1200", "1920x1080", "1280x800", "1280x720"}
 spinnerAction = {"Dungeon / Scenario", "Trial of Ascension", "Rift of Worlds", "Rune upgrading"}
 -- GUI
 addTextView("  ") addTextView("Resolution: ") 
@@ -1092,7 +1092,7 @@ function victoryRoutine(choice, stageMatch)
 	-- TODO: Don't do checkIfMax() if arena
 	local randomInstance = math.random(0,2)
 	local randomTime = math.random(0,90)
-	if skip == false then
+	if skip == false and arenaMain == 0 then
 		if AMonMax == 0 then checkIfMax() end
 		setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
 		if AMonMax == 1 then continueClick(1800, 300, 15, 15, 2 + randomInstance) end
