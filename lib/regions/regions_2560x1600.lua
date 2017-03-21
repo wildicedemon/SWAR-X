@@ -12,6 +12,7 @@ rechargeEnergy          = Region(125,480,1320,800)
 
 runeSnap                = Region(700,360,1150,1100)
 statsSection            = Region(2260,550,300,350)
+timeSection             = Region(2260,700,300,50)
 
 --StageList Loop Regions
 battleGearWheelReg      = Region(0,1380,225,220)
@@ -19,7 +20,7 @@ victoryDiamondReg       = Region(1800,670,280,260)
 victoryRaidDamageReg    = Region(170,670,370,150)
 worldMapReg             = Region(1630,1200,200,200)
 bigFlashReg             = Region(2050,1000,200,150)
-arenaBigWingReg         = Region(2000,855,250,230)
+arenaBigWingReg         = Region(2050,1000,250,230)
 playReg                 = Region(494,1452,70,90)
 pauseReg                = Region(940,610,650,180)
 arenaResultsReg         = Region(235,890,250,250)
@@ -81,6 +82,10 @@ runeRarityRegion        = Region(1450, 360, 380, 400)
 runePrimeRegion         = Region(980,500,600,120)
 runeSubRegion           = Region(770,700,600,340)
 runeEvalStats           = Region(1510,680,300,400)
+
+--Rune upgrading Regions
+runeLvlReg              = left
+runePowerUpButtonReg    = Region(960,920,495,155)
 
 --Needs to be implemented.
 runeShopStarRegion      = Region(245,298,350,325) -- UNUSED
