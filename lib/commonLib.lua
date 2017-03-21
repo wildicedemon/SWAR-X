@@ -342,7 +342,7 @@ end
 -- Allow new functionality to partially be supported in the script
 function isSupportedDimension()
     -- ## CHANGING THIS MAY BREAK THE SCRIPT ##
-    if resChoise == "2560x1600" then
+    if resChoice == "2560x1600" then
         return true
     else
         return false
