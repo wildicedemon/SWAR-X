@@ -342,7 +342,7 @@ end
 -- Allow new functionality to partially be supported in the script
 function isSupportedDimension()
     -- ## CHANGING THIS MAY BREAK THE SCRIPT ##
-    if resChoice == "2560x1600" then
+    if appUsableSize:getX() == 2560 and appUsableSize:getY() == 1600 then
         return true
     else
         return false
