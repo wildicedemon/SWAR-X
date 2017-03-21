@@ -49,7 +49,7 @@ refillEnergyLimit = 0
 rstars = 0
 rslot = 0
 rrarity = ""
-rprime = 0
+rprime = ""
 rsub = 0
 levelSelect = ""
 
@@ -570,7 +570,7 @@ function runeSubEvaluation()
 	if varRuneRarity == nil or CBRuneEvalRarity == false then runeRarityEvaluation() end
 	if varRuneRarity == 1 then varRuneRarity = nil return true end
 	if varRuneRarity == -1 then rsub = "Nil" return true end
-	local subCent = ((subStatCent / (varRuneRarity - 1) ) * 100)
+	local subCent = math.floor((subStatCent / (varRuneRarity - 1) ) * 100)
 	rsub = subCent
 	if debugAll == true then
 		local wCount = 10
@@ -593,11 +593,6 @@ function runeSubEvaluation()
 end
 function runeEval()
 	if debugAll == true then toast("[Function] runeEval") end
-	rstars = 0
-	rslot = 0
-	rrarity = 0
-	rprime = 0
-	rsub = 0
 	showStatsSection(false)
 	local sellRune = 0
 	--all called functions return false unless keep conditions meet where they return true
