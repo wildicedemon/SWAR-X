@@ -325,6 +325,20 @@ function tableLength(T)
 end
 
 -- ========== SWAR-X specific Functions ==========
+function isPro()
+    if string.find(getVersion(), "pro" ) then
+        return true
+    else
+        return false
+    end
+end
+function isLatestVersion()
+    if string.find(getVersion(), "6.8.0" ) then
+        return true
+    else
+        return false
+    end
+end
 function stageDetect()
 
 
