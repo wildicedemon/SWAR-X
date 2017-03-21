@@ -100,6 +100,9 @@ if (resChoice ~= nil) then
 	end
 	imgPath = imgPath.."/"..resChoice
 	setImagePath(imgPath)
+
+	if resChoice ~= "2560x1600" or resChoice ~= "2560x1440" then
+		simpleDialog("WARNING: Experimental resolution", "With the resolution you have choosen this script uses auto-resized images. \n Please keep in mind that this means the script may not fully work. \n\n If you encounter any issues please report them!")
 else
 	scriptExit("Error", "No resolution seems to be choosen. Please report this issue.")
 end
