@@ -74,7 +74,7 @@ addTextView("  ") newRow()
 
 addTextView("------------------------------Refill Configuration-----------------------------------")newRow()
 addCheckBox("refillEnergy", "Refill Energy with Crystal ", false) addTextView("  ") addCheckBox("limitEnergyRefills", "Energy Refill Limit: ", false)  addEditNumber("refillEnergyLimit", 20) newRow()
-addCheckBox("refillWings", "Refill Wings with Crystal ", false) addTextView("  ") addCheckBox("limitWingsRefills", "Wing Refill Limit: ", false)  addEditNumber("refillWingsLimit", 60) newRow()
+addCheckBox("refillWings", "Refill Wings with Crystal ", false) addTextView("  ") addCheckBox("limitWingsRefills", "Wing Refill Limit: ", false)  addEditNumber("refillWingsLimit", 20) newRow()
 addTextView("  ") newRow()
 
 addTextView("------------------------------Advanced Configuration--------------")newRow()
