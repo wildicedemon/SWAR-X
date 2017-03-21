@@ -232,13 +232,13 @@ function multiCancel()
 end
 function arenaRefresh()
 	if debugAll == true then toast("[Function] arenaRefresh") end
-	arenaRefreshReg:existsClick(arenaRefresh, 0)
-	arenaRefreshListReg:existsClick(arenaRefreshList, 0)
+	arenaRefreshReg:existsClick(arenaRefreshList, 0)
+	arenaRefreshListReg:existsClick(arenaRefreshListConfirm, 0)
 	wait(2)
 	while true do
 		if arenaRefreshWaitReg:exists(arenaRefreshWait, 0) then
 		wait(2)
-		arenaRefreshListReg:existsClick(arenaRefreshList, 0)
+		arenaRefreshListReg:existsClick(arenaRefreshListConfirm, 0)
 		else
 			break
 		end
@@ -1041,28 +1041,31 @@ function victoryRoutine(choice, stageMatch)
 	end
 
 	-- TODO: Don't do checkIfMax() if arena
-	local randomInstance = math.random(0,2)
 	local randomTime = math.random(0,90)
-	if skip == false and arenaMain == 0 then
-		if AMonMax == 0 then checkIfMax() end
-		setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
-		if AMonMax == 1 then continueClick(1800, 300, 15, 15, 2 + randomInstance) end
-		if AMonMax == 2 then continueClick(1800, 300, 15, 15, 2 + randomInstance) end
-	else
-		setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
-		continueClick(1800, 300, 15, 15, 2 + randomInstance)
-		if debugAll == true then toast("continueClick #1 [Victory Routine]") end
+	local randomInstance = 0
+	if arenaMain == 0 then
+		randomInstance = math.random(1,3)
+		if skip == false then
+			if AMonMax == 0 then checkIfMax() end
+			setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
+			if AMonMax == 1 then continueClick(1800, 300, 15, 15, 1 + randomInstance) end
+			if AMonMax == 2 then continueClick(1800, 300, 15, 15, 1 + randomInstance) end
+		else
+			setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
+			continueClick(1800, 300, 15, 15, 1 + randomInstance)
+		end
 	end
 	wait(.5)
 	setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
-	continueClick(1800, 300, 15, 15, 2 + randomInstance)
-	if debugAll == true then toast("continueClick #2 [Victory Routine]") end
+	continueClick(1800, 300, 15, 15, 1 + randomInstance)
 	wait(0.75 )
-	if (sellRune) then
-		runeSale()
-	else
-		if not okenReg:existsClick(ok, 1) then
-			multiCancel()
+	if arenaMain == 0 then
+		if (sellRune) then
+			runeSale()
+		else
+			if not okenReg:existsClick(ok, 1) then
+				multiCancel()
+			end
 		end
 	end
 end
