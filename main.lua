@@ -196,6 +196,18 @@ function refillArena()
 
 	areaGoTo(areaArena)
 end
+-- TODO: Create new giftAllFriends function
+alreadyGiftedAllFriends = false
+function giftAllFriends()
+	if debugAll == true then toast("[Function] giftAllFriends") end
+	if (alreadyGiftedAllFriends) then toast("Already gifted all friends.") end
+	if (battleButtonReg:existsClick(Pattern("communityButton.png"):similar(0.65))) then
+		-- find giftButtons
+		-- click giftButtons and count how much gifts were sent out
+		-- toast "<amount> friends are gifted."
+		-- set alreadyGiftedAllFriends to true
+	end
+end
 function ripairs(t)
 	if debugAll == true then toast("[Function] ripairs") end
 	local function ripairs_it(t,i)
