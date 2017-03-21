@@ -31,7 +31,7 @@ areaMapReg              = Region(2300,1350,220,210)
 dungeonStageReg         = Region(190,400,855,1140)
 
 yesWordPngReg           = Region(830,875,398,178)
-okenReg                 = Region(1026,870,503,440)
+okenReg                 = Region(1026,870,503,540)
 
 cancelCrossReg          = Region(1575,190,305,800)
 cancel2Reg              = Region(1575,190,305,800)
