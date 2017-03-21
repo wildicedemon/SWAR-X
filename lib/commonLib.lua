@@ -339,19 +339,39 @@ function isLatestVersion()
         return false
     end
 end
+-- Allow new functionality to partially be supported in the script
+function isSupportedDimension()
+    -- ## CHANGING THIS MAY BREAK THE SCRIPT ##
+    if appUsableSize:getX() == 2560 and appUsableSize:getY() == 1600 then
+        return true
+    else
+        return false
+    end
+end
+function showStatsSection(shouldShow)
+    ---Screen Stats
+    statsSection:highlightOff()
+    wait(.1)
+
+    if shouldShow then
+        statsSection:highlight(
+            "Runs: \n"..
+            "T: "..tostring(runsCount).." | V: "..tostring(victoryCount).." | D: "..tostring(deathCount).."\n"..
+            "\n"..
+            "Runes: \n"..
+            "B: "..tostring(runesKeptCount).." | S: "..tostring(runesSoldCount)
+        )
+    end
+
+end
 function stageDetect()
 
 
 end
-
 function stageSelect()
 
 
 end
-
-
-
-
 function levelSelect()
 
 
