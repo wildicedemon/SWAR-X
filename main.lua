@@ -17,11 +17,19 @@ Settings:set("MinSimilarity", 0.90)
 setImmersiveMode(false)
 
 -- Give more details when the script is stopped in all cases
-setStopMessage(
-	"Start time: "..os.date("%H:%M:%S - %d/%m/%Y" , os.time()).."\n"..
-	"Ankulua v"..getVersion().."\n"..
-	"CompareDimension: " .. appUsableSize:getX() .. " x " .. appUsableSize:getY().."\n"
-)
+if isLatestVersion() then
+	setStopMessage(
+		"Start time: "..os.date("%H:%M:%S - %d/%m/%Y" , os.time()).."\n"..
+		"Ankulua v"..getVersion().."\n"..
+		"CompareDimension: " .. appUsableSize:getX() .. " x " .. appUsableSize:getY().."\n"
+	)
+else
+	print(
+		"Start time: "..os.date("%H:%M:%S - %d/%m/%Y" , os.time()).."\n"..
+		"Ankulua v"..getVersion().."\n"..
+		"CompareDimension: " .. appUsableSize:getX() .. " x " .. appUsableSize:getY().."\n"
+	)
+end
 
 -- =========
 -- Variables
