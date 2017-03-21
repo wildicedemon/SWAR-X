@@ -695,7 +695,6 @@ function runeEval()
 		wait(.4)
 		runeEvalStats:highlightOff()
 		setImagePath(imgPath)
-		runesKeptCount = runesKeptCount + 1
 		return false
 	end
 end
@@ -730,6 +729,7 @@ function runeSale()
 				if debugAll == true then toast("Rune Sold!") wait(.75) end
 				existsClick(yes)
 				runesSoldCount = runesSoldCount + 1
+				showStatsSection()
 				local sellResponse, match = waitMulti({yes, worldMap}, 3)
 				if (sellResponse == 1) then
 					click(match)
@@ -738,6 +738,8 @@ function runeSale()
 			else
 				if debugAll == true then toast("Keep Rune!") wait(.75) end
 				if debugAll == true then toast("Keeping Rune!") wait(.75) end
+				runesKeptCount = runesKeptCount + 1
+				showStatsSection()
 				if not existsClick(get) then
 					multiCancel()
 				end
@@ -750,7 +752,7 @@ function runeSale()
 		end
 
 	elseif not (buttonRegion:exists(sell)) then
-		if debugAll == true then toast(" NoSell Buttion Cancel") end
+		if debugAll == true then toast("No Sell Buttion Found") end
 		multiCancel()
 	end
 end
@@ -1072,6 +1074,7 @@ function battlePreperationRoutine(choice, stageMatch)
 	if bigFlashReg:existsClick(bigFlash) then
 		existsClick(yes, 2) -- Click yes in "No Leadership skill" pop-up
 		runsCount = runsCount + 1
+		showStatsSection()
 	end
 end
 -- Battle Routine
@@ -1095,6 +1098,7 @@ end
 function victoryRoutine(choice, stageMatch)
 	victoryCount = victoryCount + 1
 	toast("Victory! [Victory Routine] #"..tostring(victoryCount))
+	showStatsSection()
 	currentIndex = 2
 	if victoryDiamondRegFlag == 0 then
 		victoryDiamondReg = regionFinder(stageMatch, 2)
@@ -1179,6 +1183,7 @@ end
 function deathRoutine(choice, stageMatch)
 	deathCount = deathCount + 1
 	toast("Defeated! [Death Routine] #"..tostring(deathCount))
+	showStatsSection()
 	while true do
 		Region(1300,900,800,300):existsClick(defeatedNo)
 		AMonMax = 0
@@ -1206,20 +1211,8 @@ currentIndex = 4
 maxIndexStageList = 4
 xTime = Timer()
 ArenaOverRide = 0
---statsSection:setHighlightStyle()
---statsSection:setHighlightTextStyle()
-while true do
-	---Screen Stats
-	statsSection:highlightOff()
-	wait(.1)
 
-	statsSection:highlight(
-		"Runs: \n"..
-		"T: "..tostring(runsCount).." | V: "..tostring(victoryCount).." | D: "..tostring(deathCount).."\n"..
-		"\n"..
-		"Runes: \n"..
-		"B: "..tostring(runesKeptCount).." | S: "..tostring(runesSoldCount)
-	)
+while true do
 -- ========== Arena battles ==========
 	if (AreaSelection == 12 or ArenaOverRide == 1) and currentIndex ~= 2 then
 		toast("Arena Farm Should be Activated")

@@ -339,6 +339,18 @@ function isLatestVersion()
         return false
     end
 end
+function showStatsSection()
+    ---Screen Stats
+    statsSection:highlightOff()
+    wait(.1)
+    statsSection:highlight(
+        "Runs: \n"..
+        "T: "..tostring(runsCount).." | V: "..tostring(victoryCount).." | D: "..tostring(deathCount).."\n"..
+        "\n"..
+        "Runes: \n"..
+        "B: "..tostring(runesKeptCount).." | S: "..tostring(runesSoldCount)
+    )
+end
 function stageDetect()
 
 
