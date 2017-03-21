@@ -11,7 +11,7 @@ dofile(localPath.."lib/commonLib.lua")
 dofile(localPath.."lib/images.lua")
 appUsableSize = getAppUsableScreenSize()
 toast ("Auto Detected Resolution: " .. appUsableSize:getX() .. " x " .. appUsableSize:getY())
-Settings:setScriptDimension(true, appUsableSize:getX())
+Settings:setScriptDimension(true, 2560)
 Settings:setCompareDimension(true, appUsableSize:getX())
 Settings:set("MinSimilarity", 0.90)
 setImmersiveMode(false)
@@ -65,7 +65,6 @@ bigCancalRegFlag = 0
 -- Resolution & StartScreen
 dialogInit()
 -- Spinners
-
 spinnerRes = {"2560x1600", "2560x1440", "1920x1200", "1920x1080", "1280x800", "1280x720"}
 spinnerAction = {"Dungeon / Scenario", "Trial of Ascension", "Rift of Worlds", "Rune upgrading"}
 -- GUI
@@ -84,9 +83,14 @@ dialogShow("Resolution & Action")
 
 -- Resolution of images and compareDimension
 if (resChoice ~= nil) then
-	dofile(localPath.."lib/regions_"..resChoice..".lua")
+	if resChoice == "2560x1600" or resChoice == "1920x1200" or resChoice == "1280x800" then
+		dofile(localPath.."lib/regions_2560x1600.lua")
+	elseif resChoice == "2560x1440" or resChoice == "1920x1080" or resChoice == "1280x720" then
+		dofile(localPath.."lib/regions_2560x1440.lua")
+	end
 	imgPath = imgPath.."/"..resChoice
 	setImagePath(imgPath)
+
 else
 	scriptExit("Error", "No resolution seems to be choosen. Please report this issue.")
 end

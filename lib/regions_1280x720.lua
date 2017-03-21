@@ -8,7 +8,7 @@ left                    = Region(150,250,480,280)
 bottomLeft              = Region(0,440,342,278)
 
 buttonRegion            = Region(384,482,514,214)
-rechargeEnergy          = Region(200,200,325,275)
+rechargeEnergy          = Region(150,200,450,325)
 
 runeSnap                = Region(350,0,575,720)
 statsSection            = Region(1080,200,200,300)
