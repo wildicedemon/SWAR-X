@@ -292,6 +292,7 @@ function monsterLevelCheck()
 end
 function arenaLevelCheck()
 	if debugAll == true then toast("[Function] arenaLevelCheck") end
+	showStatsSection(false)
 	arenaLvlCount = 0
 	arenaRepCount = 0
 	arenaEmptyCount = 0
@@ -580,7 +581,7 @@ function runeEval()
 	rrarity = 0
 	rprime = 0
 	rsub = 0
-	statsSection:highlightOff()
+	showStatsSection(false)
 	local sellRune = 0
 	--all called functions return false unless keep conditions meet where they return true
 	if sellRune == 0 and CBRuneEvalStar == true and runeStarEval() == false then
@@ -653,7 +654,7 @@ function runeSale()
 				if debugAll == true then toast("Rune Sold!") wait(.75) end
 				existsClick(yes)
 				runesSoldCount = runesSoldCount + 1
-				showStatsSection()
+				showStatsSection(true)
 				local sellResponse, match = waitMulti({yes, worldMap}, 3)
 				if (sellResponse == 1) then
 					click(match)
@@ -663,7 +664,7 @@ function runeSale()
 				if debugAll == true then toast("Keep Rune!") wait(.75) end
 				if debugAll == true then toast("Keeping Rune!") wait(.75) end
 				runesKeptCount = runesKeptCount + 1
-				showStatsSection()
+				showStatsSection(true)
 				if not existsClick(get) then
 					multiCancel()
 				end
@@ -717,7 +718,7 @@ function areaGoTo(areaOverride)
 
 
 	local loopVarG = 1
-	if debugAll == true then toast("Navigating to: "..destination) end
+	if debugAll == true then toast("Navigating to: "..spinnerAreaReturn[AreaSelection]) end
 	while loopVarG == 1 do
 		if existsClick(Pattern(destination):similar(0.8), 2) then
 			if debugAll == true then getLastMatch():highlight(2) end
@@ -998,7 +999,7 @@ function battlePreperationRoutine(choice, stageMatch)
 	if bigFlashReg:existsClick(bigFlash) then
 		existsClick(yes, 2) -- Click yes in "No Leadership skill" pop-up
 		runsCount = runsCount + 1
-		showStatsSection()
+		showStatsSection(true)
 	end
 end
 -- Battle Routine
@@ -1022,7 +1023,7 @@ end
 function victoryRoutine(choice, stageMatch)
 	victoryCount = victoryCount + 1
 	toast("Victory! [Victory Routine] #"..tostring(victoryCount))
-	showStatsSection()
+	showStatsSection(true)
 	currentIndex = 2
 	if victoryDiamondRegFlag == 0 then
 		victoryDiamondReg = regionFinder(stageMatch, 2)
@@ -1107,7 +1108,7 @@ end
 function deathRoutine(choice, stageMatch)
 	deathCount = deathCount + 1
 	toast("Defeated! [Death Routine] #"..tostring(deathCount))
-	showStatsSection()
+	showStatsSection(true)
 	while true do
 		Region(1300,900,800,300):existsClick(defeatedNo)
 		AMonMax = 0

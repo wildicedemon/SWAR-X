@@ -339,17 +339,21 @@ function isLatestVersion()
         return false
     end
 end
-function showStatsSection()
+function showStatsSection(shouldShow)
     ---Screen Stats
     statsSection:highlightOff()
     wait(.1)
-    statsSection:highlight(
-        "Runs: \n"..
-        "T: "..tostring(runsCount).." | V: "..tostring(victoryCount).." | D: "..tostring(deathCount).."\n"..
-        "\n"..
-        "Runes: \n"..
-        "B: "..tostring(runesKeptCount).." | S: "..tostring(runesSoldCount)
-    )
+
+    if shouldShow then
+        statsSection:highlight(
+            "Runs: \n"..
+            "T: "..tostring(runsCount).." | V: "..tostring(victoryCount).." | D: "..tostring(deathCount).."\n"..
+            "\n"..
+            "Runes: \n"..
+            "B: "..tostring(runesKeptCount).." | S: "..tostring(runesSoldCount)
+        )
+    end
+
 end
 function stageDetect()
 
