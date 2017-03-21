@@ -48,7 +48,7 @@ swipeCount = 0
 refillEnergyLimit = 0
 rstars = 0
 rslot = 0
-rrarity = 0
+rrarity = ""
 rprime = 0
 rsub = 0
 levelSelect = ""
@@ -389,7 +389,7 @@ function runeStarEval()
 end
 function runeDim()
 	if debugAll == true then toast("[Function] runeDim") end
-	runeCompDim = ""
+	local runeCompDim = ""
 	local runeDimMatch = existsMultiMaxSnap(runeTypeAndSlotRegion,{
 		Pattern("runeWord.png"):similar(0.9),
 		Pattern("runeWord98.png"):similar(0.9),
@@ -411,13 +411,15 @@ function runeDim()
 		Pattern("runeWord66.png"):similar(0.9),
 		Pattern("runeWord64.png"):similar(0.9)})
 	if runeDimMatch == -1 then
-		runeCompDim = "nil"
+		scriptExit("Error", "Couldn't find a matching runeWord for runeDimMatch.")
 	elseif runeDimMatch == 1 then
 		runeCompDim = ""
 	else
 		runeCompDim = tostring((100 - ((runeDimMatch -1) * 2)))
 		if debugAll == true then toast("runeCompDim = "..runeCompDim.." [runeDime]") end
 	end
+
+	return runeCompDim
 end
 function runeRarityEvaluation ()
 	if debugAll == true then toast("[Function] runeRarityEvaluation") end
@@ -435,7 +437,6 @@ function runeRarityEvaluation ()
 		end
 
 	varRuneRarity = runeRarityMatch
-	if debugAll == true then getLastMatch():highlight(RuneR, 3) end
 	if runeRarityMatch == 1 then
 		local RuneR = tostring("Common")
 		rrarity = RuneR
@@ -453,6 +454,8 @@ function runeRarityEvaluation ()
 		rrarity = RuneR
 	end
 
+	if debugAll == true then getLastMatch():highlight(rrarity, 2) end
+
 	if runeRarityMatch < minRuneRarity then
 		return false
 	else
@@ -464,21 +467,29 @@ function runeSlotEvaluation()
 	if debugAll == true then toast("[Function] runeSlotEvaluation") end
 	local preMinSimilarity = Settings:get("MinSimilarity")
 	Settings:set("MinSimilarity", 0.7)
-	local runeSlotMatch = existsMultiMaxSnap(runeTypeAndSlotRegion,{
-		"runeSlot1"..runeCompDim..".png",
-		"runeSlot2"..runeCompDim..".png",
-		"runeSlot3"..runeCompDim..".png",
-		"runeSlot4"..runeCompDim..".png",
-		"runeSlot5"..runeCompDim..".png",
-		"runeSlot6"..runeCompDim..".png"})
-
-	if runeSlotMatch == -1 then
-		rslot = runeSlotMatch
-		return true
+	local runeSlotMatch = -1
+	if isSupportedDimension() then
+		runeSlotMatch = existsMultiMaxSnap(runeStarRegion,{
+			runeSlot2,
+			runeSlot3,
+			runeSlot4,
+			runeSlot5,
+			runeSlot6})
+		if debugAll == true then runeStarsRegionD:highlight(tostring(runeSlotMatch),2) end
+		if runeSlotMatch == -1 then runeSlotMatch = 1 end
+	else
+		local runeCompDim = runeDim()
+		runeSlotMatch = existsMultiMaxSnap(runeTypeAndSlotRegion,{
+			"runeSlot1"..runeCompDim..".png",
+			"runeSlot2"..runeCompDim..".png",
+			"runeSlot3"..runeCompDim..".png",
+			"runeSlot4"..runeCompDim..".png",
+			"runeSlot5"..runeCompDim..".png",
+			"runeSlot6"..runeCompDim..".png"})
+		if debugAll == true then getLastMatch():highlight(tostring(runeSlotMatch),2) end
 	end
 	rslot = runeSlotMatch
 	Settings:set("MinSimilarity", preMinSimilarity)
-	if debugAll == true then getLastMatch():highlight(tostring(runeSlotMatch),2) end
 	return runeSlotMatch
 end
 function runePrimaryEvaluation()
@@ -593,7 +604,6 @@ function runeEval()
 	if sellRune == 0 and CBRuneEvalStar == true and runeStarEval() == false then
 		sellRune = 1
 	end
-	runeDim()
 	if sellRune == 0 and CBRuneEvalRarity == true and runeRarityEvaluation() == false then
 		sellRune = 1
 	end
@@ -608,8 +618,7 @@ function runeEval()
 							"Slot: "..tostring(rslot).."\n"..
 							"Rarity: "..rrarity.."\n"..
 							"Prime: "..rprime.."\n"..
-							"Sub: "..tostring(rsub).."%\n"..
-							"Dim: "..runeCompDim.."%")
+							"Sub: "..tostring(rsub).."%\n")
 	wait(2)
 	if sellRune == 1 then
 		setImagePath(localPath.."runes/")
