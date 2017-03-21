@@ -1206,17 +1206,20 @@ currentIndex = 4
 maxIndexStageList = 4
 xTime = Timer()
 ArenaOverRide = 0
+--statsSection:setHighlightStyle()
+--statsSection:setHighlightTextStyle()
 while true do
 	---Screen Stats
 	statsSection:highlightOff()
 	wait(.1)
-	-- statsSection:setHighlightStyle()
-	-- statsSection:setHighlightTextStyle()
 
-	statsSection:highlight("Runs: "..tostring(runsCount).."\n"
-		.."Victories: "..tostring(victoryCount).." Deaths: "..tostring(deathCount).."\n"
-		.."Runes Kept: "..tostring(runesKeptCount).." Runes Sold: "..tostring(runesSoldCount))
-
+	statsSection:highlight(
+		"Runs: \n"..
+		"T: "..tostring(runsCount).." | V: "..tostring(victoryCount).." | D: "..tostring(deathCount).."\n"..
+		"\n"..
+		"Runes: \n"..
+		"B: "..tostring(runesKeptCount).." | S: "..tostring(runesSoldCount)
+	)
 -- ========== Arena battles ==========
 	if (AreaSelection == 12 or ArenaOverRide == 1) and currentIndex ~= 2 then
 		toast("Arena Farm Should be Activated")
