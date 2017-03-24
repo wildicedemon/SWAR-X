@@ -264,7 +264,7 @@ function checkIfMax()
 		if AMonMax == 1 then click(Location(1320,720)) break end
 		if debugAll == true then Reg:highlight(2) end
 		if Reg:exists(expBarMax, 0) then
-			getLastMatch():highlight(.25)
+			if debugAll == true then getLastMatch():highlight(.25) end
 			AMonMax = 1
 		else
 			AMonMax = 2
