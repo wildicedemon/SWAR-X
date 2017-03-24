@@ -324,7 +324,7 @@ function tableLength(T)
     return count
 end
 
--- ========== SWAR-X specific Functions ==========
+-- ========== Ankulua version related ==========
 function isPro()
     if string.find(getVersion(), "pro" ) then
         return true
@@ -339,6 +339,8 @@ function isLatestVersion()
         return false
     end
 end
+
+-- ========== SWAR-X specific Functions ==========
 -- Allow new functionality to partially be supported in the script
 function isSupportedDimension()
     -- ## CHANGING THIS MAY BREAK THE SCRIPT ##
@@ -359,17 +361,106 @@ function showStatsSection(shouldShow)
             "T: "..tostring(runsCount).." | V: "..tostring(victoryCount).." | D: "..tostring(deathCount).."\n"..
             "\n"..
             "Runes: \n"..
-            "B: "..tostring(runesKeptCount).." | S: "..tostring(runesSoldCount)
+            "K: "..tostring(runesKeptCount).." | S: "..tostring(runesSoldCount)
         )
     end
 
 end
+
+-- ========== SWAR-X farming Functions ==========
 function stageDetect()
 
 
 end
-function stageSelect()
+function stageSelect(stageOverride,difficultyOverride)
+	if debugAll == true then toast("[Function] stageSelect") end
+	local findLvl = ""
+	local Stage = areaSelect
+	if stageOverride then
+		Stage = stageOverride
+	end
 
+	local Difficulty = diffSelection
+	if difficultyOverride then
+		Difficulty = difficultyOverride
+	end
+
+
+---TODO: difficulty Selection Should only occur where it exists -- Scenario --TOA( Normal & Hard)
+	if exists(Pattern(Difficulty..".png"):similar(0.8), 0) then
+	else
+		local choice, diffMatch = waitMulti(difficultyList, 15, false)
+		click(diffMatch)
+		wait(.5)
+		existsClick(Pattern(Difficulty.."Select.png"):similar(0.8), 0)
+		wait(.5)
+	end
+
+---TODO: This Selects then level that should be executed and needs to be modified to account for the diffrent kinds of area
+	if AreaSelection <= 9 then
+		local loopVarX = 1
+		while loopVarX == 1 do
+			if exists(Pattern(Stage):similar(0.8), 0) then
+				loopVarX = 0
+				break
+			end
+			loopVarX = loopVarX + 1
+			if loopVarX >= 10 then
+				loopVarX = - 1
+				simpleDialog("Error", "Failed to Select Stage")
+			end
+			swipe(Location(600,1250),Location(600,500))
+		end
+		dungeonStageReg:existsClick(Pattern(Stage):similar(0.8), 0)
+		if debugAll == true then getLastMatch():highlight(2) end
+
+		wait(1)
+
+		local levelSelect = "b"..tostring(levelSelection)..".png" --this is for the dungeons
+		local loopVar = 1
+
+		while loopVar == 1 do
+			findLvl = exists(Pattern(levelSelect):similar(0.8), 0)
+			if findLvl ~= "" then
+				loopVar = 0
+				break
+			end
+			loopVar = loopVar + 1
+			if loopVar >= 10 then
+				loopVar = - 1
+				simpleDialog("Error", "Failed to match level with selection")
+			end
+			swipe(Location(1700,1300),Location(1700,500))
+		end
+		local regLevel = Region(findLvl:getX() - 300, findLvl:getY() - 55 , 1150, 250)                             					 if debugAll == true then regLevel:highlight(2) end
+		regLevel:existsClick(scenarioFlash, 0)
+	elseif AreaSelection > 9 and AreaSelection < 14 then
+	--- TODO: add the stuff to handle Arena, Rift, World Boss
+
+
+		--World Boss Enter Confirmation
+		existsClick(yes)
+
+	elseif AreaSelection >= 14 then
+		local levelSelect = "scenarioLevel"..tostring(levelSelection)..".png" --this should apply to the scenario
+		local loopVar = 1
+
+		while loopVar == 1 do
+			if exists(Pattern(levelSelect):similar(0.8), 0) then
+				findLvl = getLastMatch()
+				loopVar = 0
+				break
+			end
+			loopVar = loopVar + 1
+			if loopVar >= 10 then
+				loopVar = - 1
+				simpleDialog("Error", "Failed to match level with selection")
+			end
+			swipe(Location(1900,1300),Location(1900,500))
+		end
+		local regLevel = Region(findLvl:getX() - 50, findLvl:getY() - 40 , 1165, 290)                             					 if debugAll == true then regLevel:highlight(2) end
+		regLevel:existsClick(scenarioFlash, 0)
+	end
 
 end
 function levelSelect()
