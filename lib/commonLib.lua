@@ -87,7 +87,7 @@ function autoResize(target, defaultDimension, immersive, region)
     if (max == 0) then
         Settings:setCompareDimension(true, defaultDimension)
         Settings:setScriptDimension(true, defaultDimension)
-	resumeROI(oldROI)
+    resumeROI(oldROI)
         usePreviousSnap(false)
         return -1
     end
@@ -342,7 +342,7 @@ end
 -- Allow new functionality to partially be supported in the script
 function isSupportedDimension()
     -- ## CHANGING THIS MAY BREAK THE SCRIPT ##
-    if appUsableSize:getX() == 2560 and appUsableSize:getY() == 1600 then
+    if resChoice == "2560x1600" or resChoice == "1920x1200" or resChoice == "1280x800"  then
         return true
     else
         return false
