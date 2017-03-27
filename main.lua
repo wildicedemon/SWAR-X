@@ -76,7 +76,6 @@ bigCancalRegFlag = 0
 dialogInit()
 -- Spinners
 spinnerRes = {"2560x1600", "2560x1440", "1920x1200", "1920x1080", "1280x800", "1280x720"}
-spinnerAction = {"Dungeon / Scenario", "Trial of Ascension", "Rift of Worlds", "Rune upgrading"}
 -- GUI
 addTextView("  ") addTextView("Resolution: ") 
 addTextView("  ") addTextView(appUsableSize:getX() .. "x" .. appUsableSize:getY() .. " (Auto detected)")newRow()
@@ -85,9 +84,6 @@ addTextView("  ") newRow()
 addTextView("  ") addTextView("What would you like to do?") newRow()
 addRadioGroup("action", 1)
 addRadioButton("Dungeon / Scenario", 1)
---addRadioButton("Trial of Ascension", 2)
---addRadioButton("Rift of Worlds", 3)
-if isSupportedDimension() then addRadioButton("Rune upgrading", 4) end
 addTextView("  ") newRow()
 dialogShow("Resolution & Action")
 
@@ -111,8 +107,6 @@ end
 -- == Configuration ==
 if action == 1 or action == 2 or action == 3 then -- GUI for dungeon / scenario
 	dofile(localPath.."lib/dialogs/dungeonScenarioDialog.lua")
-elseif action == 4 then -- GUI for rune upgrading
-	dofile(localPath.."lib/dialogs/runeUpgradeDialog.lua")
 else
 	scriptExit("Error", "No action seems to be choosen. Please report this issue.")
 end
@@ -1163,9 +1157,6 @@ xTime = Timer()
 ArenaOverRide = 0
 
 while true do
-	if (action == 4) then
-		upgradeRune()
-	end
 
 	showStatsSection(true)
 
