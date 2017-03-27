@@ -47,7 +47,7 @@ addTextView("------------------------------Area Farm Configuration--------------
 if (action == 1) then
     addSpinnerIndex("AreaSelection", spinnerAreaReturn, "Garen Forest") addTextView("  ") addSpinnerIndex("diffSelection", spinnerDiff, "Hell") addTextView(" Lvl: ")  addSpinnerIndex("levelSelection", spinnerLevel, "1") newRow()
 elseif (action == 2) then
-    addSpinnerIndex("toaSelection", spinnerTOA, "Normal") newRow()
+    addSpinnerIndex("toaSelection", spinnerTOA, "Normal") addTextView(" Lvl: ")  addSpinnerIndex("levelSelection", spinnerLevel, "1") newRow()
 elseif (action == 3) then
     addSpinnerIndex("raidSelection", spinnerRaidReturn, "Dark Beast") newRow()
 end
@@ -58,15 +58,14 @@ addCheckBox("nextArea", "Next Area", false) addCheckBox("sellRune", "Sell Runes 
 addTextView("  ") newRow()
 
 addTextView("------------------------------Arena Configuration-----------------------------------")newRow()
-addCheckBox("arenaFarm", "Arena Farming", false) newRow()
-if isSupportedDimension() then addCheckBox("shouldBattleRivals", "Battle Arena Rivals", false) addCheckBox("shouldBattleHistory", "Battle Arena History", false) newRow() end
+addCheckBox("arenaFarm", "Arena Farming", false)newRow()
 addTextView("Arena Check Frequency [Mins]") addEditNumber("arenaTimeFreq", 60) newRow()
-addTextView("Max # of Enemies") addEditNumber("arenaMaxEnemies", 1) newRow()
+addTextView("Max # of Enemies") addEditNumber("ArenaMaxMon", 1) newRow()
 addTextView("Max Avg Level of Enemies") addEditNumber("ArenaMaxAvgLvl", 40) newRow()
 addTextView("  ") newRow()
 
 addTextView("------------------------------Rune Evaluation Configuration----------------------------")newRow()
-addCheckBox("CBRuneEval", "Evaluate Runes", false) addCheckBox("CBRuneEvalStar", "Stars", false) addCheckBox("CBRuneEvalRarity", "Rarity", false) addCheckBox("CBRuneEvalPrimary", "Prime", false) addCheckBox("CBRuneEvalSubCent", "SubS", false) newRow()
+addCheckBox("CBRuneEval", "Evalu Runes: ", false) addCheckBox("CBRuneEvalStar", "Stars", false) addCheckBox("CBRuneEvalRarity", "Rarity", false) addCheckBox("CBRuneEvalPrimary", "Prime", false) addCheckBox("CBRuneEvalSubCent", "SubS", false) newRow()
 addTextView("------------------------------Primary Stat Configuration--------------------------------")newRow()
 addCheckBox("keepRunePrimeHP", "HP ", true) addCheckBox("keepRunePrimeATK", "ATK ", true) addCheckBox("keepRunePrimeDEF", "DEF ", true) addCheckBox("keepRunePrimeSPD", "SPD ", true) newRow()
 addCheckBox("keepRunePrimeCRIRate", "CRI Rate", true) addCheckBox("keepRunePrimeCRIDmg", "CRI Dmg ", true) addCheckBox("keepRunePrimeRES", "RES ", true)addCheckBox("keepRunePrimeACC", "ACC ", true) newRow()

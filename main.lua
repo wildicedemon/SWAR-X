@@ -318,22 +318,16 @@ function arenaLevelCheck()
 		if (i == 1) then usePreviousSnap(false) else usePreviousSnap(true) end
 		local newReg = Region(Reg:getX() + 152,Reg:getY() + 184,Reg:getW() - 160,Reg:getH() - 184)
 		-- local Stars = Region(Reg:getX(),Reg:getY(),90,90)
-		local lv, foundlv = numberOCRNoFindException(newReg,"lvl")
+		local lv = numberOCRNoFindException(newReg,"lvl")
 		if debugAll == true then newReg:highlight(tostring(lv),.5) end
+		local numStar = existsMultiMaxSnap(Reg,{oneStar, twoStar, threeStar, fourStar, fiveStar, sixStar, arenaEmptyMon})
+		if (numStar == -1) then toast("Unknown Error") elseif numStar == 7 then toast("Slot Empty") end
+		if debugAll == true and numStar <= 6 then toast(numStar.." Star Monster") end
+		if debugAll == true then Reg:highlight(1) end
 		arenaLvlCount = arenaLvlCount + lv
-		if isSupportedDimension() then
-			if foundLv then arenaRepCount = arenaRepCount + 1
-			else arenaEmptyCount = arenaEmptyCount + 1
-			end
-		else
-			local numStar = existsMultiMaxSnap(Reg,{oneStar, twoStar, threeStar, fourStar, fiveStar, sixStar, arenaEmptyMon})
-			if (numStar == -1) then toast("Unknown Error") elseif numStar == 7 then toast("Slot Empty") end
-			if debugAll == true and numStar <= 6 then toast(numStar.." Star Monster") end
-			if debugAll == true then Reg:highlight(1) end
-			if numStar >= 1 and numStar <= 6 then arenaRepCount = arenaRepCount + 1
-			elseif numStar == 7 then toast("Slot is empty") arenaEmptyCount = arenaEmptyCount + 1
-			else   toast("Unknown Error(ArenaLevelCheck-Stars")
-			end
+		if numStar >= 1 and numStar <= 6 then arenaRepCount = arenaRepCount + 1
+		elseif numStar == 7 then toast("Slot is empty") arenaEmptyCount = arenaEmptyCount + 1
+		else   toast("Unknown Error(ArenaLevelCheck-Stars")
 		end
 	end
 	usePreviousSnap(false)
@@ -378,7 +372,6 @@ function swapMaxFood()
 end
 function runeStarEval()
 	if debugAll == true then toast("[Function] runeStarEval") end
-	usePreviousSnap(false)
 	local starFind = listToTable(runeStarRegion:findAll(runeStar))
 	local starCount = tableLength(starFind)
 	local runeStarWord = "runeStar"..tostring(starCount)..".png"
@@ -408,7 +401,6 @@ function runeStarEval()
 end
 function runeDim()
 	if debugAll == true then toast("[Function] runeDim") end
-	usePreviousSnap(true)
 	local runeCompDim = ""
 	local runeDimMatch = existsMultiMaxSnap(runeTypeAndSlotRegion,{
 		Pattern("runeWord.png"):similar(0.9),
@@ -443,7 +435,6 @@ function runeDim()
 end
 function runeRarityEvaluation ()
 	if debugAll == true then toast("[Function] runeRarityEvaluation") end
-	usePreviousSnap(true)
 	local runeRarityMatch = existsMultiMaxSnap(runeRarityRegion,{
 		runeRarityNormal,
 		runeRarityMagic,
@@ -486,7 +477,6 @@ function runeRarityEvaluation ()
 end
 function runeSlotEvaluation()
 	if debugAll == true then toast("[Function] runeSlotEvaluation") end
-	usePreviousSnap(true)
 	local preMinSimilarity = Settings:get("MinSimilarity")
 	Settings:set("MinSimilarity", 0.7)
 	local runeSlotMatch = -1
@@ -516,7 +506,6 @@ function runeSlotEvaluation()
 end
 function runePrimaryEvaluation()
 	if debugAll == true then toast("[Function] runePrimaryEvaluation") end
-	usePreviousSnap(true)
 	local slot = runeSlotEvaluation()
 	if slot == -1 then
 		rprime = "Nil"
@@ -579,7 +568,6 @@ function runePrimaryEvaluation()
 end
 function runeSubEvaluation()
 	if debugAll == true then toast("[Function] runeSubEvaluation") end
-	usePreviousSnap(true)
 	if debugAll == true then runeSubRegion:highlight(1) end
 	if runeSubRegion:exists(runeSubPercentage) then
 		subStatFind = listToTable(runeSubRegion:findAll(runeSubPercentage))
@@ -599,8 +587,10 @@ function runeSubEvaluation()
 	if debugAll == true then
 		local wCount = 10
 		while wCount > 0 do
-			if vibe == true then vibrate(1) end
-			toast(tostring(subCent).."% of %Subs on a "..varRuneRarity.." Rune")
+			if debugAll == true then
+				if vibe == true then vibrate(1) end
+				toast(tostring(subCent).."% of %Subs on a "..varRuneRarity.." Rune")
+			end
 			wait(2)
 			wCount = wCount - 1
 		end
@@ -630,8 +620,6 @@ function runeEval()
 	if sellRune == 0 and CBRuneEvalSubCent == true and runeSubEvaluation() == false then
 		sellRune = 1
 	end
-
-	usePreviousSnap(false)
 
 	runeEvalStats:highlight("Stars: "..tostring(rstars).."\n"..
 							"Slot: "..tostring(rslot).."\n"..
@@ -757,10 +745,10 @@ function areaGoTo(areaOverride)
 		if existsClick(Pattern(destination):similar(0.8), 2) then
 			if debugAll == true then getLastMatch():highlight(2) end
 			wait(.75)
-			if existsClick(Pattern(destination):targetOffset(0,-80):similar(0.8), 0) then
+			if existsClick(Pattern(destination):targetOffset(0,-80):similar(0.8), 0) then 
+				if debugAll == true then  getLastMatch():highlight(2) end
 				yesWordPngReg:existsClick(yes, 0.5)
 				if areaOverride == arena then
-					if debugAll == true then  arenaSelectNormalReg:highlight(2) end
 					arenaSelectNormalReg:existsClick(arenaSelectNormal, 0.5)
 				end
 			end
@@ -892,10 +880,8 @@ stageClickList = {
 arenaClickList = {
 	{target = battleGearWheel, region = battleGearWheelReg, id = "battleGearWheelClick"},
 	{target = victoryDiamond, region = victoryDiamondReg, id = "victoryClick"},
-	{target = arenaMedal, region = victoryDiamondReg, id = "victoryClick"},
 	{target = arenaResults, region = arenaResultsReg, id = "arenaResultsClick"},
-	{target = arenaBigWing, region = arenaBigWingReg, id = "arenaBigWingClick"},
-	{target = arenaDialog, region = arenaDialogReg, id = "arenaDialogClick"}
+	{target = arenaBigWing, region = arenaBigWingReg, id = "arenaBigWingClick"}
 }
 backList = {
 	battleGearWheel,
@@ -914,10 +900,8 @@ backList = {
 arenabackList = {
 	battleGearWheel,
 	victoryDiamond,
-	arenaMedal,
 	arenaResults,
 	arenaBigWing,
-	arenaDialog,
 	bigCancel,
 	rechargeWing,
 	networkDelay,
@@ -1021,22 +1005,12 @@ if (keepRunePrimeCRIDmg) then  table.insert(primeStatKeep, 1) else table.insert(
 if (keepRunePrimeRES) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
 if (keepRunePrimeACC) then  table.insert(primeStatKeep, 1) else table.insert(primeStatKeep, 0) end
 
-function battleArenaPreperationRoutine(choice, stageMatch)
-	if arenaBigWingRegFlag == 0 then
-		arenaBigWingReg = regionFinder(stageMatch, 2)
-		arenaBigWingRegFlag = 1
-	end
-	if debugAll then arenaBigWingReg:highlight(1) end
-	arenaBigWingReg:existsClick(arenaBigWing)
-	runsCount = runsCount + 1
-	showStatsSection(true)
-end
 -- ==================================
 -- Scenario / Dungeon / Raid routines
 -- ==================================
 -- Battle Preperation Routine
 function battlePreperationRoutine(choice, stageMatch)
-	currentIndex = choice
+	currentIndex = 4
 	if AMonMax == 1 then swapMaxFood() end
 	if AMonMax == 2 then AMonMax = 0 end
 	if bigFlashRegFlag == 0 then
@@ -1052,7 +1026,7 @@ function battlePreperationRoutine(choice, stageMatch)
 end
 -- Battle Routine
 function battleRoutine(choice, stageMatch)
-	currentIndex = choice
+	currentIndex = 1
 	if battleGearWheelRegFlag == 0 then
 		battleGearWheelReg = regionFinder(stageMatch, 2)
 		battleGearWheelRegFlag = 1
@@ -1060,6 +1034,8 @@ function battleRoutine(choice, stageMatch)
 
 	if AMonMax == 2 then AMonMax = 0 end
 
+	arenaDialogReg:existsClick(arenaDialog,0)
+	if debugAll == true then arenaDialogReg:highlight(0.5) end
 	playReg:existsClick(play,0)
 	if debugAll == true then playReg:highlight(1) end
 	pauseReg:existsClick(pause, 0)
@@ -1067,7 +1043,10 @@ function battleRoutine(choice, stageMatch)
 end
 -- Victory Routine
 function victoryRoutine(choice, stageMatch)
-	currentIndex = choice
+	victoryCount = victoryCount + 1
+	toast("Victory! [Victory Routine] #"..tostring(victoryCount))
+	showStatsSection(true)
+	currentIndex = 2
 	if victoryDiamondRegFlag == 0 then
 		victoryDiamondReg = regionFinder(stageMatch, 2)
 		victoryDiamondRegFlag = 1
@@ -1105,12 +1084,13 @@ end
 
 -- Continue / Repeat routine
 function continueRepeatRoutine(choice, stageMatch)
-	currentIndex = choice
+
 	if worldMapRegFlag == 0 then
 		worldMapReg = regionFinder(stageMatch, 2)
 		worldMapRegFlag = 1
 	end
 
+	currentIndex = 3
 	--Next Area
 	if (nextArea and (stagelist[choice] == "ilin.png" or stagelist[choice] == "libia.png" or stagelist[choice] == "dulander.png")) then
 		while (existsClick(stagelist[choice], 0)) do
@@ -1122,7 +1102,10 @@ function continueRepeatRoutine(choice, stageMatch)
 		return
 	end
 
-	flashRequireRegion:existsClick(smallFlash, 2)
+--	if (not flashRequireRegion:existsClick(smallFlash)) then
+--		if debugAll == true then toast("smallFlash not found [Continue Repeat Routine]") end
+		flashRequireRegion:existsClick(smallFlash, 2)
+--	end
 
 	wait(.5)
 	if debugAll == true then toast("Try matching Yes [Continue Repeat Routine]") end
@@ -1169,6 +1152,7 @@ function networkDelayConnectionRoutine(choice, stageMatch)
 	existsClick(yes)
 	wait(5)
 end
+--
 
 -- ========================
 -- Main Botting Application
@@ -1177,181 +1161,171 @@ currentIndex = 4
 maxIndexStageList = 4
 xTime = Timer()
 ArenaOverRide = 0
-function doArenaBattles(battleMode)
-	local function swipeDown()
-		swipeCount = swipeCount + 1
-		local swipeInt = swipeCount
-		while swipeInt >= 1 do
-			wait(.5)
-			swipeInt = swipeInt -1
-			swipe(Location(1700,1075),Location(1700,461))
-		end
+
+while true do
+	if (action == 4) then
+		upgradeRune()
 	end
-	if debugAll then arenaOppReg:highlight(1) end
-	if not arenaOppReg:exists(arenaSmallWing, 1) then
-		swipeDown()
-		wait(1)
+
+	showStatsSection(true)
+
+-- ========== Arena battles ==========
+	if (AreaSelection == 12 or ArenaOverRide == 1) and currentIndex ~= 2 then
+		toast("Arena Farm Should be Activated")
+		areaGoTo(arena)
+		arenaButtonReg:waitClick(arenaOrangeButton, 2)
+		arenaMain = 1
+		wait(2)
 	end
-	local opponentList = listToTable(arenaOppReg:findAll(arenaSmallWing))
-	local tCount = tableLength(opponentList)
-	if debugAll == true then toast(tCount..": Opponent's Found") end
-	for i, opp in ipairs(opponentList) do
-		if i <= tCount then
-			wait(.2)
-			click(opp)
-			arenaExe = 1
-			secondRivalDialog = false
-		end
 
-		while arenaExe == 1 do
-			--------------------------------------------------------------------------------------------------------
-			local choice, stageMatch = regionWaitMulti(arenaClickList, 20, debugAll)
-			--If we didn't find a match on the arenaClickList, search the bigger list
-			if (choice == -1) then
-				toast("No match found [arenaClickList]")
-				choice, stageMatch = waitMulti(arenabackList, 20*60, false)
-
-				if (choice == -1) then
-					if debugAll == true then toast("Choice -1 [Multi Cancel]") end
-					multiCancel()
-					wait(1)
-				end
-			end
-
-			if debugAll == true then stageMatch:highlight(1) end
-			--------------------------------------------------------------------------------------------------------
-			---Starts the Fight
-
-			if (choice == 5) then
-				currentIndex = 4
-				if battleMode == "history" or battleMode == "normal" then
-					arenaLevelCheck()  ---Obtains information regarding opponent
-					if (arenaEmptyCount >= 1) or ((arenaLvlCount / arenaRepCount) <= ArenaMaxAvgLvl) then
-						battleArenaPreperationRoutine(choice, stageMatch)
-					else ---Cancel the fight and proceed to the next opponent
-						arenaExe = 0
-						if bigCancalRegFlag == 0 then
-							bigCancalReg = regionFinder(exists(bigCancel, 0), 2) ---Does Last MatchWork Here?
-							bigCancalRegFlag = 1
-						end
-						bigCancalReg:existsClick(bigCancel, 3)
-						break
-					end
-				else -- No level check needed
-					battleArenaPreperationRoutine(choice, stageMatch)
-				end
-			end
-			--------------------------------------------------------------------------------------------------------
-			---Events During the Actual Battle
-			if (choice == 1) then
-				if debugAll == true then toast("Choice 1 [Battle Routine]") end
-				battleRoutine(choice, stageMatch)
-			end
-			--------------------------------------------------------------------------------------------------------
-			---At End of fight Contols What Happens
-			if (choice == 2 or choice == 3) then
-				victoryRoutine(choice, stageMatch)
-			end
-
-			--------------------------------------------------------------------------------------------------------
-			---Results of the Fight Check/Continue/Accept
-			if choice == 4 then
-				arenaExe = 0
-				arenaResultsReg:existsClick(arenaResults, 0)
-				if debugAll == true then stageMatch:highlight(0.75) end
-
-				arenaDefeatedEnemies = arenaDefeatedEnemies + 1
-				toast("[Arena] Defeated enemy #"..arenaDefeatedEnemies)
-
-				-- Check if more enemies are defeated then wanted and if so quit arena
-				if arenaDefeatedEnemies >= arenaMaxEnemies then
-					arenaMain = 0
-					arenaExe = 0
-				end
-
-				break
-			end
-
-			if (choice == 6) then
-				if secondRivalDialog then
-					arenaExe = 0
-				end
-				if debugAll == true then getLastMatch():highlight(0.5) end
-				local randomTime = math.random(0,90)
-				local randomInstance = math.random(1,2)
-				setContinueClickTiming(10 + randomTime / 4, 65 + randomTime / 1)
-				continueClick(800, 450, 1000, 800, 1 + randomInstance)
-				secondRivalDialog = true
-			end
-
-			if (choice == 8) then
-				if refillWings == true then
-					refillArena()
-				else 
-					-- Go back farming
-					keyevent(4) wait(.7) -- Back Button
-					keyevent(4)	wait(.7) -- Back Button
-					keyevent(4)	wait(.7) -- Back Button
-					arenaMain = 0
-					arenaExe = 0
-					enoughWingsAvailable(false)
-					areaGoTo()
-					wait(3)
-					stageSelect()
-					wait(2)
-					break
-				end
-			end
-
-			if (choice == 9) or (choice == 10) then
-				existsClick(yes)
-				wait(5)
-			end
-
-			--Cancel Max Monster and  Misc Menus
-			if (choice == 11) then
-				if debugAll == true then toast("Choice 10 [Cancel Max Monster & Misc Menus]") end
-				click(stageMatch)
-				wait(5)
-			end
-
-			if choice == 12 or choice == 13 then
-				if debugAll == true then toast("Choice 11 or 12 [areaGoTo]") end
-				areaGoTo(arena)
-			end
-
-		end
-
-		--Critria for refreshing the list.
-		if battleMode == "normal" then
-			if i >= tCount and EndofArenaL:exists(endArenaList, 0) then
+	-- Do Arena Battles if
+	while arenaMain == 1 do
+		ArenaOverRide = 0
+			if not arenaOppReg:exists(arenaSmallWing, 0) then
 				swipeCount = 0
 				arenaExe = 0
 				arenaRefresh()
+				wait(1)
 			end
-		elseif battleMode == "rivals" then
-			if i >= tCount and swipeCount >= 3 then
-				swipeCount = 0
-				arenaExe = 0
-			end
-		-- TODO: Swipe more for history because it goes back to top after battle
-		elseif battleMode == "history" then
-			if i >= tCount and swipeCount >= 3 then
-				if debugAll then toast("swipeCount = "..swipeCount) wait(10) end
-				swipeCount = 0
-				arenaExe = 0
-				battleHistoryDone = true
-			end
-		end
+			local opponentList = listToTable(arenaOppReg:findAll(arenaSmallWing))
+			local tCount = tableLength(opponentList)
+			if debugAll == true then toast(tCount..": Opponent's Found") end
+			for i, opp in ipairs(opponentList) do
+				if i <= tCount then
+					wait(.2)
+					click(opp)
+					arenaExe = 1
+				end
+				--------------------------------------------------------------------------------------------------------
+				--------------------------------------------------------------------------------------------------------
+				---Code Needs to be inserted here to keep track of and control what happens if there are not enough wings
+				---This is also where we can control the refill of wings if we are out of them or return to another area to
+				---continue with out farming if refills for wings are not enabled.
+				--------------------------------------------------------------------------------------------------------
+				--------------------------------------------------------------------------------------------------------
 
-		if i >= tCount then
-			swipeDown()
-		end
+				while arenaExe == 1 do
+					--------------------------------------------------------------------------------------------------------
+					local choice, stageMatch = regionWaitMulti(arenaClickList, 20, debugAll)
+					--If we didn't find a match on the arenaClickList, search the bigger list
+					if (choice == -1) then
+						toast("No match found [arenaClickList]")
+						choice, stageMatch = waitMulti(arenabackList, 20*60, false)
+
+						if (choice == -1) then
+							if debugAll == true then toast("Choice -1 [Multi Cancel]") end
+							multiCancel()
+							wait(1)
+						end
+					end
+
+					if debugAll == true then stageMatch:highlight(1) end
+					--------------------------------------------------------------------------------------------------------
+					---Starts the Fight
+
+					if (choice == 4) then
+						currentIndex = 4
+						arenaLevelCheck() ---Obtains information regarding opponent
+						if (arenaEmptyCount >= ArenaMaxMon) or ((arenaLvlCount / arenaRepCount) <= ArenaMaxAvgLvl) then
+							arenaBigWingReg:existsClick(arenaBigWing)
+							if arenaBigWingRegFlag == 0 then
+								arenaBigWingReg = regionFinder(stageMatch, 2)
+								arenaBigWingRegFlag = 1
+							end
+						else ---Cancel the fight and proceed to the next opponent
+							arenaExe = 0
+							if bigCancalRegFlag == 0 then
+								bigCancalReg = regionFinder(exists(bigCancel, 0), 2) ---Does Last MatchWork Here?
+								bigCancalRegFlag = 1
+							end
+							bigCancalReg:existsClick(bigCancel, 3)
+							break
+						end
+					end
+					--------------------------------------------------------------------------------------------------------
+					---Events During the Actual Battle
+					if (choice == 1) then
+						if debugAll == true then toast("Choice 1 [Battle Routine]") end
+						battleRoutine(choice, stageMatch)
+					end
+					--------------------------------------------------------------------------------------------------------
+					---At End of fight Contols What Happens
+					if (choice == 2) then
+						victoryRoutine(choice, stageMatch)
+					end
+
+					--------------------------------------------------------------------------------------------------------
+					---Results of the Fight Check/Continue/Accept
+					if choice == 3 then
+					currentIndex = 3
+					arenaExe = 0
+						arenaResultsReg:existsClick(arenaResults, 0)
+						if debugAll == true then stageMatch:highlight(0.75) end
+						break
+					end
+
+					-- TODO: Misc Checks
+					-- TODO: Network  Resubmit
+
+					if (choice == 6) then
+						if refillWings == true then
+							refillArena()
+						else
+							keyevent(4)
+										wait(.7)
+							keyevent(4)
+										wait(.7)
+							keyevent(4)
+										wait(.7)
+							arenaMain = 0
+							arenaExe = 0
+							areaGoTo()
+										wait(3)
+							stageSelect()
+										wait(2)
+							break
+						end
+					end
+
+					if (choice == 7) or (choice == 8) then
+						existsClick(yes)
+						wait(5)
+					end
+
+					--Cancel Max Monster and  Misc Menus
+					if (choice == 9) then
+						if debugAll == true then toast("Choice 9 [Cancel Max Monster & Misc Menus]") end
+						click(stageMatch)
+						wait(5)
+					end
+
+					if choice == 10 or choice == 11 then
+					if debugAll == true then toast("Choice 11 or 12 [areaGoTo]") end
+					areaGoTo(arena)
+					end
+
+				end
+
+				if i >= tCount then
+					swipeCount = swipeCount +1
+					local swipeInt = swipeCount
+					while swipeInt >= 1 do
+						wait(.5)
+						swipeInt = swipeInt -1
+						swipe(Location(1700,1075),Location(1700,461))
+					end
+				end
+				--Critria for refreshing the list.
+				if i >= tCount and EndofArenaL:exists(endArenaList, 0) then
+					swipeCount = 0
+					arenaExe = 0
+					arenaRefresh()
+				end
+			end
 	end
-end
 
 -- ========== Scenario battles ==========
-function doScenarioBattles()
+	--TODO: Code to return to here we need to.
 	local choice, stageMatch = regionWaitMulti(stageClickList, 20, debugAll)
 	--If we didn't find a match on the stagelist, search the bigger list
 	if (choice == -1) then
@@ -1384,9 +1358,6 @@ function doScenarioBattles()
 	if (choice == 2) then
 		if debugAll == true then toast("Choice 2 [Victory Routine]") end
 		victoryRoutine(choice, stageMatch)
-		victoryCount = victoryCount + 1
-		toast("Victory! [Victory Routine] #"..tostring(victoryCount))
-		showStatsSection(true)
 	end
 
 	--Continue Repeat Routine
@@ -1417,72 +1388,5 @@ function doScenarioBattles()
 	if choice == 11 or choice == 12 then
 		if debugAll == true then toast("Choice 11 or 12 [areaGoTo]") end
 		areaGoTo()
-	end
-end
-
-while true do
-	if (action == 4) then
-		upgradeRune()
-	end
-
-	showStatsSection(true)
-
--- ========== Arena battles ==========
-	if (AreaSelection == 12 or ArenaOverRide == 1) and currentIndex ~= 2 then
-		toast("Arena Farm Should be Activated")
-		areaGoTo(arena)
-		if arenaButtonReg:exists(arenaOrangeButton, 2) then
-			arenaMain = 1
-			arenaDefeatedEnemies = 0
-			battleHistoryDone = false
-			enoughWingsAvailable = true
-		else
-			scriptExit("[Error] Failed to verify that the Arena screen is open.", 
-			"Sorry, the script tried to go to the Arena but the script couldn't verify that it succeeded.\n\n"..
-			"If this happens again, please report this issue.")
-		end
-		wait(2)
-	end
-
-	-- Do Arena Battles if
-	while arenaMain == 1 do
-		-- Reset arena battle information 
-		ArenaOverRide = 0
-		swipeCount = 0
-		arenaExe = 0
-
-		showStatsSection(false)
-
-		-- First check Rivals
-		if debugAll then arenaButtonReg:highlight(1) end
-		if arenaButtonReg:exists(arenaRivalsNotification) and shouldBattleRivals and enoughWingsAvailable then
-			toast("[Arena] Found rivals available. Start Battle Rivals")
-			if debugAll then arenaButtonReg:highlight(1) end
-			arenaButtonReg:waitClick(arenaGreenButton, 2)
-			doArenaBattles("rivals")
-		end
-		-- Second check Battle Log (History)
-		if not battleHistoryDone and shouldBattleHistory and enoughWingsAvailable then
-			toast("[Arena] Checking Battle History")
-			if debugAll then arenaBattleLogReg:highlight(1) end
-			arenaBattleLogReg:waitClick(arenaBattleLog, 2)
-			doArenaBattles("history")
-		end
-		-- Third check Match Battles
-		if enoughWingsAvailable then
-			toast("[Arena] Start Normal Battle")
-			arenaButtonReg:waitClick(arenaOrangeButton, 2)
-			if debugAll then arenaButtonReg:highlight(1) end
-			if not arenaOppReg:exists(arenaSmallWing, 1) then
-				arenaRefresh()
-				wait(1)
-			end
-			doArenaBattles("normal")
-		end
-	end
-
-	-- Scenario Battles
-	if action == 1 or action == 2 or action == 3 then
-		doScenarioBattles()
 	end
 end
