@@ -48,10 +48,9 @@ function runeUpgradePossible(currentRuneLevel)
     if currentRuneLevel < desiredRuneLevel then
         return true
     else
-        if vibe == true then vibrate(1) end
-        simpleDialog("Rune upgraded to desired level +"..desiredRuneLevel,
+        simpleDialog("Rune upgraded to desired level.",
             "The rune is upgraded to atleast rune level +"..desiredRuneLevel.."\n\n"..
-            "Click 'OK' to select the next rune or 'Cancel' to quit.")
+            "Click 'OK' to select the next rune.")
         return false 
     end
 end
@@ -83,7 +82,6 @@ function upgradeRune()
                 waitForNextRune()
             end
         else
-            if vibe == true then vibrate(1) end
             simpleDialog("Rune Power-up Button not found.",
                 "Whoops! Couldn't find the Rune Power-up button. \n\n"..
                 "Please check if the Rune Power-up Dialog of the rune you'd like to upgrade is opened. \n"..

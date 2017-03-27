@@ -11,7 +11,7 @@ addRadioButton("+15 (Legend)", 15) newRow()
 addTextView("  ") newRow()
 
 addTextView("How much time do you need to select the next rune that you want upgraded?") newRow()
-addEditNumber("runeUpgradePauseTime", 1) addTextView(" Minutes") newRow()
+addEditNumber("runeUpgradePauseTime", 2) addTextView(" Minutes") newRow()
 addTextView("  ") newRow()
 
 addTextView("-------------------- Advanced Configuration --------------------") newRow()
