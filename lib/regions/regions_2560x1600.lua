@@ -63,16 +63,16 @@ FifthMonEXP             = Region(970,1150,520,200) -- UNUSED
 SixthMonEXP             = Region(1550,1150,520,200) -- UNUSED
 
 --Arena Battle Regions
-arenaOppReg             = Region(1740,215,400,1200)
+arenaOppReg             = Region(1950,240,400,1200)
 EndofArenaL             = Region(1570,1160,655,325)
-arenaRefreshReg         = Region(1605,205,560,180)
+arenaRefreshReg         = Region(1760,250,560,280)
 arenaRefreshWaitReg     = Region(850,200,850,220)
 arenaRefreshListReg     = Region(850,760,850,300)
 arenaDialogReg          = Region(0,1100,300,300)
 arenaSelectNormalReg    = Region(460,320,715,930)
 arenaSelectWorldReg     = Region(1370,320,715,930)
 arenaBattleLogReg       = Region(1450,1315,275,255)
-arenaButtonReg          = Region(1850,530,640,540)
+arenaButtonReg          = Region(1850,530,660,540)
 
 --Rune Evaluation Regions
 runeStarRegion          = Region(795,510,190,190)

@@ -87,7 +87,7 @@ function autoResize(target, defaultDimension, immersive, region)
     if (max == 0) then
         Settings:setCompareDimension(true, defaultDimension)
         Settings:setScriptDimension(true, defaultDimension)
-    resumeROI(oldROI)
+        resumeROI(oldROI)
         usePreviousSnap(false)
         return -1
     end
